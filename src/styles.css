@@ -1,0 +1,548 @@
+/* Global Variables & Theming */
+:root {
+  /* Default Theme (Modern Obsidian) */
+  --bg: #09090b;
+  /* Deep black/gray */
+  --panel: rgba(24, 24, 27, 0.6);
+  /* Zinc-900 with opacity */
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --text: #e4e4e7;
+  /* Zinc-200 */
+  --muted: #a1a1aa;
+  /* Zinc-400 */
+  --accent: #3b82f6;
+  /* Blue-500 */
+  --success: #10b981;
+  /* Emerald-500 */
+  --error: #ef4444;
+  /* Red-500 */
+  --grid-color: rgba(59, 130, 246, 0.1);
+  --font-header: "Inter", sans-serif;
+  --font-body: "JetBrains Mono", monospace;
+  --ghost-opacity: 0.3;
+  --blur: 24px;
+  --radius: 12px;
+  /* Slightly tighter radius for modern look */
+  --shadow-color: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="vs-light"] {
+  --bg: #ffffff;
+  --panel: rgba(255, 255, 255, 0.8);
+  --panel-border: rgba(0, 0, 0, 0.08);
+  --text: #18181b;
+  --muted: #71717a;
+  --accent: #2563eb;
+  --success: #059669;
+  --error: #dc2626;
+  --grid-color: rgba(37, 99, 235, 0.08);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-header);
+  font-size: 14px;
+  /* More standard UI font size */
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* App Layout */
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 20px;
+  background: var(--panel);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.header h1 {
+  margin: 0;
+  font-family: var(--font-header);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+
+/* Progress Stats */
+.progress {
+  display: flex;
+  gap: 32px;
+  text-align: right;
+}
+
+.progress div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.progress span {
+  font-family: var(--font-header);
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.progress strong {
+  font-family: var(--font-body);
+  font-size: 24px;
+  color: var(--text);
+}
+
+/* Main Layout Grid */
+.layout {
+  display: grid;
+  flex-grow: 1;
+  overflow: hidden;
+  gap: 16px;
+  /* Added gap since we have separate glassy panels now */
+}
+
+/* Editor Panel */
+.editor-panel {
+  background: var(--panel);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Controls & Inputs */
+.language-selector,
+.theme-selector {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 12px;
+  /* Rounded */
+  font-family: var(--font-body);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.language-selector:hover,
+.theme-selector:hover {
+  background: rgba(90, 165, 255, 0.1);
+  border-color: var(--accent);
+}
+
+.file-badge {
+  padding: 4px 10px;
+  background: rgba(90, 165, 255, 0.1);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  color: var(--accent);
+  font-family: var(--font-body);
+  font-size: 16px;
+}
+
+.opacity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.compile-button {
+  background: var(--accent);
+  border: none;
+  border-radius: 12px;
+  color: var(--bg);
+  font-family: var(--font-header);
+  font-size: 12px;
+  padding: 10px 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(90, 165, 255, 0.4);
+  transition: all 0.2s;
+}
+
+.compile-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(90, 165, 255, 0.6);
+}
+
+.compile-button:active {
+  transform: translateY(0);
+}
+
+/* Editors */
+.editor-stack {
+  position: relative;
+  flex-grow: 1;
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.ghost-layer,
+.student-layer {
+  position: absolute;
+  inset: 0;
+}
+
+.ghost-layer {
+  z-index: 1;
+  pointer-events: none;
+  opacity: var(--ghost-opacity);
+}
+
+.student-layer {
+  z-index: 2;
+}
+
+/* Sensei Widget */
+.sensei-content-widget {
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 6px 10px;
+  /* Reduced padding */
+  margin-left: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  font-family: var(--font-header);
+  /* Use UI font */
+  font-size: 12px;
+  /* Minimized font size as requested */
+  color: var(--text);
+  line-height: 1.4;
+  max-width: 300px;
+  /* narrowed */
+  z-index: 100;
+}
+
+.sensei-tooltip {
+  color: var(--text);
+}
+
+/* Resizer */
+.resizer {
+  width: 10px;
+  cursor: ew-resize;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resizer::after {
+  content: " ";
+  width: 4px;
+  height: 40px;
+  background: var(--panel-border);
+  border-radius: 2px;
+}
+
+.resizer:hover::after {
+  background: var(--accent);
+}
+
+/* Terminal Component */
+.terminal-container {
+  flex: 1;
+  background: #0d0d0d;
+  /* Dark solid/semi for terminal */
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: "JetBrains Mono", monospace;
+}
+
+.terminal-header {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.terminal-buttons {
+  display: flex;
+  gap: 6px;
+  margin-right: 16px;
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.terminal-dot.red {
+  background: #ff5f56;
+}
+
+.terminal-dot.yellow {
+  background: #ffbd2e;
+}
+
+.terminal-dot.green {
+  background: #27c93f;
+}
+
+.terminal-title {
+  color: var(--muted);
+  font-size: 12px;
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-header);
+}
+
+.terminal-body {
+  flex: 1;
+  padding: 12px 16px;
+  overflow-y: auto;
+  font-size: 13px;
+  /* Standard terminal size */
+  color: var(--text);
+  cursor: text;
+  line-height: 1.5;
+}
+
+.terminal-line {
+  margin-bottom: 4px;
+  word-wrap: break-word;
+}
+
+.terminal-line.command {
+  color: var(--accent);
+}
+
+.terminal-line.output {
+  color: var(--text);
+}
+
+.terminal-line.error {
+  color: var(--error);
+}
+
+.terminal-line.system {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.terminal-input-line {
+  display: flex;
+  align-items: center;
+}
+
+.prompt {
+  color: var(--success);
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.terminal-input {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: inherit;
+  font-size: inherit;
+  flex: 1;
+  outline: none;
+}
+
+/* Chatbot */
+.chatbot-floating {
+  background: var(--panel);
+  backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-header {
+  background: rgba(90, 165, 255, 0.1);
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: move;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.chat-header h3 {
+  margin: 0;
+  font-family: var(--font-header);
+  font-size: 12px;
+  color: var(--text);
+}
+
+.chat-controls button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: var(--text);
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.chat-controls button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-message.user .message-content {
+  background: var(--accent);
+  color: var(--bg);
+  padding: 10px 14px;
+  border-radius: 12px 12px 2px 12px;
+  box-shadow: 0 2px 10px rgba(90, 165, 255, 0.3);
+  font-family: var(--font-body);
+}
+
+.chat-message.bot .message-content {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 12px 12px 12px 2px;
+  border: 1px solid var(--panel-border);
+  font-family: var(--font-body);
+}
+
+.chat-input-box {
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--panel-border);
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input-box input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  outline: none;
+}
+
+.chat-input-box input:focus {
+  border-color: var(--accent);
+}
+
+.chat-input-box button {
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  color: var(--bg);
+  font-family: var(--font-header);
+  font-size: 10px;
+  padding: 0 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(90, 165, 255, 0.3);
+}
+
+/* Monaco Overrides */
+.ghost-layer .monaco-editor,
+.student-layer .monaco-editor {
+  background: transparent !important;
+}
+
+.ghost-layer .monaco-editor-background,
+.student-layer .monaco-editor-background {
+  background: transparent !important;
+}
+
+.error-char {
+  background: rgba(255, 76, 76, 0.4);
+  border-bottom: 2px solid red;
+}
+
+/* Banners */
+.error-banner,
+.success-banner {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  backdrop-filter: blur(5px);
+}
+
+.error-banner {
+  border: 1px solid var(--error);
+  color: var(--error);
+  background: rgba(255, 95, 95, 0.1);
+}
+
+.success-banner {
+  border: 1px solid var(--success);
+  color: var(--success);
+  background: rgba(95, 255, 175, 0.1);
+}
