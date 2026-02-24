@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 
 const parseMarkdown = (text) => {
   if (!text) return text;
-  
+
   let html = text
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
@@ -11,19 +11,19 @@ const parseMarkdown = (text) => {
     .replace(/^## (.*$)/gim, '<h2>$1</h2>')
     .replace(/^# (.*$)/gim, '<h1>$1</h1>')
     .replace(/\n/g, '<br />');
-  
+
   return html;
 };
 
-const ChatBot = ({ 
-  aiBackend, 
-  onGenerateCode, 
-  position, 
-  size, 
-  isMinimized, 
-  onPositionChange, 
+const ChatBot = ({
+  aiBackend,
+  onGenerateCode,
+  position,
+  size,
+  isMinimized,
+  onPositionChange,
   onSizeChange,
-  onToggleMinimize 
+  onToggleMinimize
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -109,7 +109,7 @@ const ChatBot = ({
     try {
       const { generateCodeFromPrompt } = await import("./code-generator.js");
       const result = await generateCodeFromPrompt(input, aiBackend);
-      
+
       console.log("Generation result:", result);
 
       setIsGenerating(false);
@@ -124,7 +124,7 @@ const ChatBot = ({
 
       if (result?.code && result.code.length > 3) {
         onGenerateCode(result);
-        
+
         const botMessage = {
           id: messages.length + 2,
           text: result.explanation || "Code generated successfully",
@@ -154,7 +154,7 @@ const ChatBot = ({
   };
 
   return (
-    <div 
+    <div
       ref={chatRef}
       className={`chatbot-floating ${isMinimized ? 'minimized' : ''}`}
       style={{
@@ -171,7 +171,7 @@ const ChatBot = ({
         <h3>Code Generator</h3>
         <div className="chat-controls">
           <span className="ai-badge">
-            {aiBackend === "ollama" ? "🔗 Ollama" : "⚙️ Local"}
+            {aiBackend === "ollama" ? "Ollama" : "Local"}
           </span>
           <button className="minimize-btn" onClick={onToggleMinimize}>
             {isMinimized ? '□' : '_'}
@@ -184,7 +184,7 @@ const ChatBot = ({
             {messages.map((msg) => (
               <div key={msg.id} className={`chat-message ${msg.sender}`}>
                 <div className="message-content">
-                  <div 
+                  <div
                     className="markdown-content"
                     dangerouslySetInnerHTML={{ __html: parseMarkdown(msg.text) }}
                   />
@@ -216,7 +216,7 @@ const ChatBot = ({
               Send
             </button>
           </div>
-          <div 
+          <div
             className="resize-handle"
             onMouseDown={handleResizeStart}
             style={{

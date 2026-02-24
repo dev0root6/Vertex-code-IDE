@@ -1,42 +1,28 @@
-/* Global Variables & Theming */
+/* ═══════════════════════════════════════════════════════
+   VERTEX — Pixelated Dark Glossy Theme
+   Inspired by the dot-matrix glow logo
+   ═══════════════════════════════════════════════════════ */
+
 :root {
-  /* Default Theme (Modern Obsidian) */
-  --bg: #09090b;
-  /* Deep black/gray */
-  --panel: rgba(24, 24, 27, 0.6);
-  /* Zinc-900 with opacity */
-  --panel-border: rgba(255, 255, 255, 0.08);
-  --text: #e4e4e7;
-  /* Zinc-200 */
-  --muted: #a1a1aa;
-  /* Zinc-400 */
-  --accent: #3b82f6;
-  /* Blue-500 */
-  --success: #10b981;
-  /* Emerald-500 */
-  --error: #ef4444;
-  /* Red-500 */
-  --grid-color: rgba(59, 130, 246, 0.1);
+  --bg: #0e0e11;
+  --panel: rgba(18, 18, 22, 0.8);
+  --panel-solid: #14141a;
+  --panel-border: rgba(255, 255, 255, 0.06);
+  --panel-highlight: rgba(255, 255, 255, 0.04);
+  --text: #d0d0d4;
+  --muted: #6a6a72;
+  --accent: #e8e8ec;
+  --accent-glow: rgba(255, 255, 255, 0.12);
+  --success: #4ade80;
+  --error: #f87171;
+  --font-pixel: "Silkscreen", cursive;
   --font-header: "Inter", sans-serif;
   --font-body: "JetBrains Mono", monospace;
   --ghost-opacity: 0.3;
   --blur: 24px;
   --radius: 12px;
-  /* Slightly tighter radius for modern look */
-  --shadow-color: rgba(0, 0, 0, 0.5);
-}
-
-[data-theme="vs-light"] {
-  --bg: #ffffff;
-  --panel: rgba(255, 255, 255, 0.8);
-  --panel-border: rgba(0, 0, 0, 0.08);
-  --text: #18181b;
-  --muted: #71717a;
-  --accent: #2563eb;
-  --success: #059669;
-  --error: #dc2626;
-  --grid-color: rgba(37, 99, 235, 0.08);
-  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.65);
+  --glow: 0 0 60px rgba(255, 255, 255, 0.03);
 }
 
 * {
@@ -54,174 +40,254 @@ body {
   margin: 0;
   font-family: var(--font-header);
   font-size: 14px;
-  /* More standard UI font size */
   background: var(--bg);
   color: var(--text);
-  transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* App Layout */
+/* ═══ App Layout ═══ */
 .app {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 12px;
+  gap: 10px;
+  padding: 10px;
   position: relative;
   z-index: 1;
 }
 
-/* Header */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  padding: 12px 20px;
-  background: var(--panel);
-  backdrop-filter: blur(var(--blur));
-  -webkit-backdrop-filter: blur(var(--blur));
-  border: 1px solid var(--panel-border);
-  border-radius: var(--radius);
-  box-shadow: 0 4px 20px var(--shadow-color);
+/* ═══ Floating Logo ═══ */
+.vertex-logo {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 100;
+  height: 48px;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.25)) brightness(1.1);
+  transition: all 0.3s ease;
+  pointer-events: auto;
+  cursor: default;
+  image-rendering: pixelated;
 }
 
-.header h1 {
-  margin: 0;
-  font-family: var(--font-header);
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text);
-  letter-spacing: -0.5px;
+.vertex-logo:hover {
+  opacity: 1;
+  filter: drop-shadow(0 0 28px rgba(255, 255, 255, 0.5)) brightness(1.2);
+  transform: scale(1.08);
 }
 
-/* Progress Stats */
-.progress {
-  display: flex;
-  gap: 32px;
-  text-align: right;
-}
-
-.progress div {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.progress span {
-  font-family: var(--font-header);
-  font-size: 10px;
-  color: var(--muted);
-  margin-bottom: 4px;
-}
-
-.progress strong {
-  font-family: var(--font-body);
-  font-size: 24px;
-  color: var(--text);
-}
-
-/* Main Layout Grid */
+/* ═══ Main Layout Grid ═══ */
 .layout {
   display: grid;
   flex-grow: 1;
   overflow: hidden;
-  gap: 16px;
-  /* Added gap since we have separate glassy panels now */
+  gap: 10px;
+  margin-top: 52px;
 }
 
-/* Editor Panel */
+/* ═══ Glossy Panel Base ═══ */
 .editor-panel {
   background: var(--panel);
   backdrop-filter: blur(var(--blur));
   -webkit-backdrop-filter: blur(var(--blur));
   border: 1px solid var(--panel-border);
   border-radius: var(--radius);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-  padding: 16px;
+  box-shadow:
+    0 8px 40px var(--shadow-color),
+    var(--glow),
+    inset 0 1px 0 var(--panel-highlight),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  padding: 14px;
   display: flex;
   flex-direction: column;
 }
 
+/* ═══ Panel Header (Controls) ═══ */
 .panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  gap: 16px;
+  margin-bottom: 10px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
-/* Controls & Inputs */
-.language-selector,
-.theme-selector {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--panel-border);
-  color: var(--text);
-  padding: 6px 12px;
-  border-radius: 12px;
-  /* Rounded */
+.panel-title h2 {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--accent);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filename-container {
+  display: flex;
+  align-items: center;
+}
+
+.filename-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: var(--accent);
   font-family: var(--font-body);
-  font-size: 18px;
+  font-size: 11px;
+  padding: 4px 8px;
+  outline: none;
+  width: 140px;
+}
+
+.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clickable:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.panel-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.clear-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  padding: 6px 16px;
   cursor: pointer;
   transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.clear-button:hover {
+  background: rgba(248, 113, 113, 0.1);
+  border-color: rgba(248, 113, 113, 0.3);
+  color: var(--error);
+}
+
+/* ═══ Controls ═══ */
+.language-selector,
+.theme-selector {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
 .language-selector:hover,
 .theme-selector:hover {
-  background: rgba(90, 165, 255, 0.1);
-  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.06);
+}
+
+.language-selector:focus,
+.theme-selector:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
 }
 
 .file-badge {
   padding: 4px 10px;
-  background: rgba(90, 165, 255, 0.1);
-  border: 1px solid var(--accent);
-  border-radius: 10px;
-  color: var(--accent);
-  font-family: var(--font-body);
-  font-size: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: var(--muted);
+  font-family: var(--font-pixel);
+  font-size: 9px;
 }
 
 .opacity {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-family: var(--font-body);
+  gap: 8px;
+  font-family: var(--font-pixel);
   color: var(--muted);
-  font-size: 18px;
+  font-size: 9px;
 }
 
-.compile-button {
+.opacity input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  outline: none;
+}
+
+.opacity input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
   background: var(--accent);
-  border: none;
-  border-radius: 12px;
-  color: var(--bg);
-  font-family: var(--font-header);
-  font-size: 12px;
-  padding: 10px 20px;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(90, 165, 255, 0.4);
-  transition: all 0.2s;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+/* ═══ Buttons — Highlighted & Pixelated ═══ */
+.compile-button {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: var(--accent);
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  padding: 8px 24px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.3),
+    0 0 16px rgba(255, 255, 255, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .compile-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.35);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(90, 165, 255, 0.6);
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, 0.4),
+    0 0 24px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
 }
 
 .compile-button:active {
   transform: translateY(0);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-/* Editors */
+/* ═══ Editor Stack ═══ */
 .editor-stack {
   position: relative;
   flex-grow: 1;
   border: 1px solid var(--panel-border);
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.3);
   overflow: hidden;
+  box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.4);
 }
 
 .ghost-layer,
@@ -240,35 +306,39 @@ body {
   z-index: 2;
 }
 
-/* Sensei Widget */
+/* ═══ Sensei Widget ═══ */
 .sensei-content-widget {
-  background: var(--panel);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--accent);
-  border-radius: 8px;
-  padding: 6px 10px;
-  /* Reduced padding */
-  margin-left: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  font-family: var(--font-header);
-  /* Use UI font */
-  font-size: 12px;
-  /* Minimized font size as requested */
-  color: var(--text);
-  line-height: 1.4;
-  max-width: 300px;
-  /* narrowed */
+  pointer-events: none;
   z-index: 100;
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.sensei-content-widget::-webkit-scrollbar {
+  height: 3px;
+}
+
+.sensei-content-widget::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sensei-content-widget::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
 }
 
 .sensei-tooltip {
   color: var(--text);
+  white-space: nowrap;
+  display: inline;
 }
 
-/* Resizer */
+/* ═══ Resizer ═══ */
 .resizer {
-  width: 10px;
+  width: 6px;
   cursor: ew-resize;
   z-index: 10;
   display: flex;
@@ -278,34 +348,37 @@ body {
 
 .resizer::after {
   content: " ";
-  width: 4px;
-  height: 40px;
-  background: var(--panel-border);
-  border-radius: 2px;
+  width: 2px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 1px;
+  transition: background 0.2s;
 }
 
 .resizer:hover::after {
-  background: var(--accent);
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* Terminal Component */
+/* ═══ Terminal — Glossy ═══ */
 .terminal-container {
   flex: 1;
-  background: #0d0d0d;
-  /* Dark solid/semi for terminal */
+  background: rgba(10, 10, 13, 0.92);
   backdrop-filter: blur(var(--blur));
   -webkit-backdrop-filter: blur(var(--blur));
   border: 1px solid var(--panel-border);
   border-radius: var(--radius);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 8px 40px var(--shadow-color),
+    var(--glow),
+    inset 0 1px 0 var(--panel-highlight);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-body);
 }
 
 .terminal-header {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.02);
   padding: 8px 16px;
   display: flex;
   align-items: center;
@@ -338,10 +411,11 @@ body {
 
 .terminal-title {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 10px;
   flex: 1;
   text-align: center;
-  font-family: var(--font-header);
+  font-family: var(--font-pixel);
+  letter-spacing: 0.5px;
 }
 
 .terminal-body {
@@ -349,7 +423,6 @@ body {
   padding: 12px 16px;
   overflow-y: auto;
   font-size: 13px;
-  /* Standard terminal size */
   color: var(--text);
   cursor: text;
   line-height: 1.5;
@@ -398,38 +471,61 @@ body {
   outline: none;
 }
 
-/* Chatbot */
+/* ═══ Chatbot — Blurred Glass ═══ */
 .chatbot-floating {
-  background: var(--panel);
-  backdrop-filter: blur(var(--blur));
-  border: 1px solid var(--panel-border);
+  background: transparent;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 16px 64px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(255, 255, 255, 0.02),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
 .chat-header {
-  background: rgba(90, 165, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
   padding: 12px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: move;
-  border-bottom: 1px solid var(--panel-border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .chat-header h3 {
   margin: 0;
-  font-family: var(--font-header);
-  font-size: 12px;
-  color: var(--text);
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+}
+
+.chat-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-controls .ai-badge {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: var(--muted);
+  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
 }
 
 .chat-controls button {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text);
   width: 24px;
   height: 24px;
@@ -438,11 +534,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  font-family: var(--font-pixel);
+  font-size: 10px;
 }
 
 .chat-controls button:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .chat-messages {
@@ -455,60 +554,73 @@ body {
 }
 
 .chat-message.user .message-content {
-  background: var(--accent);
-  color: var(--bg);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
   padding: 10px 14px;
   border-radius: 12px 12px 2px 12px;
-  box-shadow: 0 2px 10px rgba(90, 165, 255, 0.3);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
   font-family: var(--font-body);
+  font-size: 12px;
 }
 
 .chat-message.bot .message-content {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
   color: var(--text);
   padding: 10px 14px;
   border-radius: 12px 12px 12px 2px;
-  border: 1px solid var(--panel-border);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   font-family: var(--font-body);
+  font-size: 12px;
 }
 
 .chat-input-box {
   padding: 12px;
-  background: rgba(0, 0, 0, 0.1);
-  border-top: 1px solid var(--panel-border);
+  background: rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   gap: 8px;
 }
 
 .chat-input-box input {
   flex: 1;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   color: var(--text);
   padding: 10px 14px;
-  border-radius: 10px;
+  border-radius: 8px;
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: 12px;
   outline: none;
+  transition: border-color 0.2s;
 }
 
 .chat-input-box input:focus {
-  border-color: var(--accent);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.04);
 }
 
 .chat-input-box button {
-  background: var(--accent);
-  border: none;
-  border-radius: 10px;
-  color: var(--bg);
-  font-family: var(--font-header);
-  font-size: 10px;
-  padding: 0 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: var(--accent);
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  padding: 0 18px;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(90, 165, 255, 0.3);
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.03);
 }
 
-/* Monaco Overrides */
+.chat-input-box button:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.06);
+}
+
+/* ═══ Monaco Overrides ═══ */
 .ghost-layer .monaco-editor,
 .student-layer .monaco-editor {
   background: transparent !important;
@@ -519,30 +631,27 @@ body {
   background: transparent !important;
 }
 
-.error-char {
-  background: rgba(255, 76, 76, 0.4);
-  border-bottom: 2px solid red;
-}
-
-/* Banners */
+/* ═══ Banners ═══ */
 .error-banner,
 .success-banner {
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 10px;
-  font-family: var(--font-body);
+  margin-top: 10px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-family: var(--font-pixel);
+  font-size: 9px;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
   backdrop-filter: blur(5px);
 }
 
 .error-banner {
-  border: 1px solid var(--error);
+  border: 1px solid rgba(248, 113, 113, 0.25);
   color: var(--error);
-  background: rgba(255, 95, 95, 0.1);
+  background: rgba(248, 113, 113, 0.06);
 }
 
 .success-banner {
-  border: 1px solid var(--success);
+  border: 1px solid rgba(74, 222, 128, 0.25);
   color: var(--success);
-  background: rgba(95, 255, 175, 0.1);
+  background: rgba(74, 222, 128, 0.06);
 }

@@ -83,7 +83,7 @@ const detectLanguageFromPrompt = (prompt) => {
 const detectLanguageFromCode = (code) => {
   if (!code) return null;
   const lower = code.toLowerCase();
-  if (lower.includes("def ") || lower.includes("import ") && lower.includes("print(")) return "python";
+  if (lower.includes("def ") || lower.includes("import ") || lower.includes("print(")) return "python";
   if (lower.includes("public class") || lower.includes("system.out")) return "java";
   if (lower.includes("console.log") || lower.includes("function ")) return "javascript";
   if (lower.includes("#include") && lower.includes("stdio")) return "c";
@@ -347,12 +347,12 @@ const removeComments = (code) => {
 
 const generateLineAnalysisViaOllama = async (studentLine, ghostLine) => {
   try {
-    const prompt = `You are a coding sensei. Explain the following line of code's purpose and concept in a helpful, encouraging tone. The "expected" line is from the lesson. The "actual" line is what the student typed.
-
+    const prompt = `You are a coding sensei. Provide a very short motivational quote, praise, or encouragement based on the student's progress.
 Expected line: "${ghostLine}"
 Actual line: "${studentLine}"
 
-If the actual line is correct, praise the student and briefly explain the code's purpose. If it's incorrect or incomplete, gently guide them by explaining the concept. CRITICAL: Your entire response must be fewer than 20 words. No exceptions.`;
+If the student is correct, give a high-five or praise. If they are stuck, give a short 1-sentence motivational boost.
+CRITICAL: strictly 10 to 20 words maximum. No explanations, just motivation.`;
 
     const response = await fetch("http://localhost:11434/api/generate", {
       method: "POST",
@@ -361,8 +361,8 @@ If the actual line is correct, praise the student and briefly explain the code's
         model: "qwen2.5-coder:1.5b",
         prompt: prompt,
         stream: false,
-        temperature: 0.4,
-        num_predict: 80
+        temperature: 0.7,
+        num_predict: 50
       })
     });
 
@@ -377,17 +377,7 @@ If the actual line is correct, praise the student and briefly explain the code's
 
 const generateLineAnalysisViaLocal = async (studentLine, ghostLine) => {
   try {
-    const { pipeline } = await import("@xenova/transformers");
-    const generator = await pipeline("text-generation", "Xenova/distilgpt2");
-
-    const prompt = `Expected code: "${ghostLine}"\nStudent code: "${studentLine}"\nExplain the expected code and provide a hint if student code is different.`;
-
-    const result = await generator(
-      prompt,
-      { max_new_tokens: 30, temperature: 0.5 } // Reduced tokens for brevity
-    );
-
-    return result[0].generated_text.replace(prompt, "").trim();
+    return "Great progress! Keep going, you're doing amazing!";
   } catch (error) {
     console.error("Local analysis error:", error);
     return null;

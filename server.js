@@ -17,7 +17,7 @@ app.use(express.json());
 
 // Language mappings
 const languageMap = {
-  python: { ext: '.py', cmd: 'python3', timeout: 5000 },
+  python: { ext: '.py', cmd: 'python3', args: ['-u'], timeout: 5000 },
   javascript: { ext: '.js', cmd: 'node', timeout: 5000 },
   java: { ext: '.java', cmd: 'java', timeout: 5000, compile: 'javac', timeout: 10000 },
   cpp: { ext: '.cpp', cmd: 'g++', compile: true, timeout: 10000 },
@@ -32,7 +32,7 @@ const languageMap = {
 
 const executeCode = async (code, language, frontendCompileCommand, input) => {
   const langConfig = languageMap[language];
-  
+
   if (!langConfig) {
     return {
       success: false,
@@ -50,20 +50,20 @@ const executeCode = async (code, language, frontendCompileCommand, input) => {
 
     // Determine the actual command to execute
     let commandToExecute = langConfig.cmd;
-    let commandArgs = [filepath];
+    let commandArgs = langConfig.args ? [...langConfig.args, filepath] : [filepath];
 
     if (frontendCompileCommand) {
-        // For C/C++/Java (compiled), frontendCompileCommand might be like "gcc -o a.out file.c && ./a.out"
-        // This means the frontend wants to handle compilation and execution in one command string.
-        // We'll treat this as a shell command to be executed directly, bypassing langConfig.cmd for execution.
-        if (language === 'c' || language === 'cpp' || language === 'java') {
-            // Need to handle Java main class properly here if it's part of frontendCompileCommand
-            // For now, assume frontendCompileCommand completely dictates execution.
-            // This is a simplification; a more robust solution would parse frontendCompileCommand.
-            return await executeCommandAsShell(frontendCompileCommand.replace('/src/main.c', filepath).replace('/src/main.cpp', filepath).replace('/src/Main.java', filepath), tmpDir, langConfig.timeout, input);
-        }
+      // For C/C++/Java (compiled), frontendCompileCommand might be like "gcc -o a.out file.c && ./a.out"
+      // This means the frontend wants to handle compilation and execution in one command string.
+      // We'll treat this as a shell command to be executed directly, bypassing langConfig.cmd for execution.
+      if (language === 'c' || language === 'cpp' || language === 'java') {
+        // Need to handle Java main class properly here if it's part of frontendCompileCommand
+        // For now, assume frontendCompileCommand completely dictates execution.
+        // This is a simplification; a more robust solution would parse frontendCompileCommand.
+        return await executeCommandAsShell(frontendCompileCommand.replace('/src/main.c', filepath).replace('/src/main.cpp', filepath).replace('/src/Main.java', filepath), tmpDir, langConfig.timeout, input);
+      }
     }
-    
+
     // Compile if needed (Java, C++, C, Rust)
     if (langConfig.compile) {
       if (language === 'java') {
@@ -103,7 +103,7 @@ const executeCode = async (code, language, frontendCompileCommand, input) => {
         // C++, C, Rust
         const outFile = path.join(tmpDir, 'a.out');
         const compileResult = await executeCommand(langConfig.cmd, [filepath, '-o', outFile], tmpDir, langConfig.timeout);
-        
+
         if (compileResult.error) {
           return compileResult;
         }
@@ -183,7 +183,7 @@ const executeCommand = (cmd, args, cwd, timeout, input = '') => {
           proc.kill();
           resolve({
             success: false,
-            output: '',
+            output: stdout, // Return partial output
             error: `Execution timeout (${timeout}ms exceeded)`
           });
         } catch (e) {
@@ -236,6 +236,126 @@ app.post('/api/execute', async (req, res) => {
   res.json(result);
 });
 
+// Persistent workspace for user shell commands - now local .temp
+const WORKSPACE_DIR = path.join(__dirname, '.temp');
+if (!fs.existsSync(WORKSPACE_DIR)) {
+  fs.mkdirSync(WORKSPACE_DIR, { recursive: true });
+}
+
+// Store active shell processes for interactive input
+const activeProcesses = new Map();
+
+// Cleanup endpoint to clear the .temp directory on session refresh/close
+app.post('/api/cleanup', (req, res) => {
+  try {
+    // Kill all active processes first
+    for (const proc of activeProcesses.values()) {
+      try { proc.kill(); } catch (e) { }
+    }
+    activeProcesses.clear();
+
+    if (fs.existsSync(WORKSPACE_DIR)) {
+      const files = fs.readdirSync(WORKSPACE_DIR);
+      for (const file of files) {
+        const curPath = path.join(WORKSPACE_DIR, file);
+        if (fs.lstatSync(curPath).isDirectory()) {
+          fs.rmSync(curPath, { recursive: true, force: true });
+        } else {
+          fs.unlinkSync(curPath);
+        }
+      }
+      console.log('🧹 Cleaned up .temp workspace');
+    }
+    res.json({ success: true, message: 'Workspace cleaned' });
+  } catch (err) {
+    console.error('Cleanup error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Endpoint to send STDIN to a running process
+app.post('/api/shell/stdin', (req, res) => {
+  const { input } = req.body;
+  // For now, assume a single active session/process as Vertex is single-user IDE
+  const activeProc = Array.from(activeProcesses.values())[0];
+
+  if (activeProc) {
+    try {
+      activeProc.stdin.write(input + '\n');
+      console.log(`Piped to stdin: ${input}`);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  } else {
+    res.status(404).json({ success: false, error: 'No active process found' });
+  }
+});
+
+app.post('/api/shell', async (req, res) => {
+  const { command, code, filename } = req.body;
+
+  if (!command) {
+    return res.status(400).json({ success: false, stdout: '', stderr: 'No command provided' });
+  }
+
+  // Save current editor code to workspace if provided
+  if (code && filename) {
+    try {
+      const fullPath = path.join(WORKSPACE_DIR, filename);
+      fs.writeFileSync(fullPath, code);
+      console.log(`Saved ${filename} to ${WORKSPACE_DIR}`);
+    } catch (err) {
+      console.error(`Error saving file: ${err.message}`);
+    }
+  }
+
+  // Set up streaming response
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive'
+  });
+
+  let finalCommand = command;
+  if (command.startsWith('python ') && !command.includes(' -u ')) {
+    finalCommand = command.replace('python ', 'python -u ');
+  }
+
+  const proc = spawn(finalCommand, { cwd: WORKSPACE_DIR, shell: true });
+  const procId = Date.now().toString();
+  activeProcesses.set(procId, proc);
+
+  proc.stdout.on('data', (data) => {
+    res.write(JSON.stringify({ type: 'stdout', content: data.toString() }) + '\n');
+  });
+
+  proc.stderr.on('data', (data) => {
+    res.write(JSON.stringify({ type: 'stderr', content: data.toString() }) + '\n');
+  });
+
+  const timer = setTimeout(() => {
+    proc.kill();
+    activeProcesses.delete(procId);
+    res.write(JSON.stringify({ type: 'error', content: 'Execution timeout (30s)' }) + '\n');
+    res.end();
+  }, 30000);
+
+  proc.on('close', (code) => {
+    clearTimeout(timer);
+    activeProcesses.delete(procId);
+    res.write(JSON.stringify({ type: 'exit', code }) + '\n');
+    res.end();
+  });
+
+  proc.on('error', (err) => {
+    clearTimeout(timer);
+    activeProcesses.delete(procId);
+    res.write(JSON.stringify({ type: 'error', content: err.message }) + '\n');
+    res.end();
+  });
+});
+
 app.get('/api/languages', (req, res) => {
   res.json({
     supported: Object.keys(languageMap)
@@ -243,5 +363,5 @@ app.get('/api/languages', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 CoTra-IDE Compiler running on http://localhost:${PORT}`);
+  console.log(`🚀 Vertex Compiler running on http://localhost:${PORT}`);
 });

@@ -7,6 +7,7 @@ import { executeCode } from "./compiler-service.js";
 import { getLineAnalysis } from "./code-generator.js";
 import Background3D from "./Background3D.jsx";
 import Terminal from "./Terminal.jsx";
+import CodeVisualizer from "./CodeVisualizer.jsx";
 
 const SUPPORTED_LANGUAGES = [
   { name: "JavaScript", id: "javascript", compileCommand: "node" },
@@ -103,12 +104,18 @@ class SenseiContentWidget {
   }
 
   updateContent(analysis, lineNumber) {
+    if (!analysis) {
+      this.hide();
+      return;
+    }
+    this.domNode.style.display = 'block';
     this.domNode.innerHTML = `<div class="sensei-tooltip">🤔 ${analysis}</div>`;
     this._position = { lineNumber: lineNumber, column: 1 }; // Position at the beginning of the line
     this.editor.layoutContentWidget(this);
   }
 
   hide() {
+    this.domNode.style.display = 'none';
     this.domNode.innerHTML = '';
     this.editor.layoutContentWidget(this); // Re-layout to hide
   }
@@ -134,10 +141,28 @@ const App = () => {
   const [aiBackend, setAiBackend] = useState("none");
   const [opacity, setOpacity] = useState(0.3);
   const [currentLine, setCurrentLine] = useState(1);
-  const [currentLesson, setCurrentLesson] = useState(lessonScript);
+  const [currentLesson, setCurrentLesson] = useState(""); // Default empty ghost text
   const [currentLanguage, setCurrentLanguage] = useState("javascript");
   const [currentFilename, setCurrentFilename] = useState("practice.js");
+  const [isEditingFilename, setIsEditingFilename] = useState(false);
   const [currentTheme, setCurrentTheme] = useState("vs-dark");
+  useEffect(() => {
+    // Automatically detect language from filename
+    const ext = currentFilename.split('.').pop().toLowerCase();
+    const langMap = {
+      'js': 'javascript',
+      'py': 'python',
+      'java': 'java',
+      'c': 'c',
+      'cpp': 'cpp',
+      'cc': 'cpp',
+      'h': 'c'
+    };
+    if (langMap[ext] && langMap[ext] !== currentLanguage) {
+      setCurrentLanguage(langMap[ext]);
+    }
+  }, [currentFilename, currentLanguage]);
+
   const [compilerOutput, setCompilerOutput] = useState("");
   const [compilerError, setCompilerError] = useState("");
   const [isCompiling, setIsCompiling] = useState(false);
@@ -151,6 +176,7 @@ const App = () => {
 
   const [testInput, setTestInput] = useState("");
   const [testOutput, setTestOutput] = useState("");
+  const [studentCode, setStudentCode] = useState(""); // Track code for visualizer
 
   const [editorPanelWidth, setEditorPanelWidth] = useState(70); // Percentage width for the editor panel
   const [isResizing, setIsResizing] = useState(false);
@@ -192,6 +218,15 @@ const App = () => {
   useEffect(() => {
     document.body.setAttribute('data-theme', currentTheme);
   }, [currentTheme]);
+
+  // Cleanup effect to purge .temp workspace on session refresh/close
+  useEffect(() => {
+    const handleCleanup = () => {
+      navigator.sendBeacon("http://localhost:5000/api/cleanup");
+    };
+    window.addEventListener("beforeunload", handleCleanup);
+    return () => window.removeEventListener("beforeunload", handleCleanup);
+  }, []);
 
   const completion = useMemo(() => {
     if (!currentLesson.length) return 0;
@@ -258,6 +293,9 @@ const App = () => {
       setErrorMessage("");
       setCompileStatus("idle");
 
+      // Update student code state for visualizer
+      setStudentCode(value);
+
       // Update current line immediately for display purposes
       setCurrentLine(editor.getPosition().lineNumber);
     });
@@ -268,11 +306,13 @@ const App = () => {
         clearTimeout(analysisTimeoutRef.current);
       }
       analysisTimeoutRef.current = setTimeout(async () => {
-        const studentModel = studentEditorRef.current.getModel();
-        const ghostModel = ghostEditorRef.current.getModel();
-        const position = studentEditorRef.current.getPosition(); // Get current cursor position for analysis
+        const studentModel = studentEditorRef.current?.getModel();
+        const ghostModel = ghostEditorRef.current?.getModel();
+        const position = studentEditorRef.current?.getPosition();
 
-        if (!studentModel || !ghostModel || !position) {
+        // Only show Sensei if there is a lesson active (ghost code present)
+        if (!studentModel || !ghostModel || !position || !ghostModel.getValue().trim()) {
+          if (senseiWidgetRef.current) senseiWidgetRef.current.hide();
           return;
         }
 
@@ -284,8 +324,7 @@ const App = () => {
           return;
         }
 
-        // setLiveAnalysis("🤔 Analyzing..."); // Remove this line
-        const analysis = await getLineAnalysis(studentLine, ghostLine, aiBackendRef.current);
+        let analysis = await getLineAnalysis(studentLine, ghostLine, aiBackendRef.current);
 
         if (analysis && senseiWidgetRef.current) {
           senseiWidgetRef.current.updateContent(analysis, position.lineNumber);
@@ -311,6 +350,20 @@ const App = () => {
     if (studentEditor) {
       editor.setScrollTop(studentEditor.getScrollTop());
       editor.setScrollLeft(studentEditor.getScrollLeft());
+    }
+  };
+
+  const handleClear = () => {
+    setCurrentLesson("");
+    setStudentCode("");
+    setProgressIndex(0);
+    setErrorIndex(null);
+    setErrorCount(0);
+    setErrorMessage("");
+    setCompileStatus("idle");
+    const editor = studentEditorRef.current;
+    if (editor) {
+      editor.setValue("");
     }
   };
 
@@ -411,56 +464,48 @@ const App = () => {
     <>
       <Background3D />
       <div className="app" style={{ "--ghost-opacity": opacity }}>
-        <header className="header">
-          <div>
-            <h1>CoTra-IDE</h1>
-          </div>
-          <div className="progress">
-            <div>
-              <span>Completion</span>
-              <strong>{completion}%</strong>
-            </div>
-            <div>
-              <span>Errors</span>
-              <strong>{errorCount}</strong>
-            </div>
-            <div>
-              <span>Cursor Line</span>
-              <strong>{currentLine}</strong>
-            </div>
-          </div>
-        </header>
+        {/* Floating Logo */}
+        <img
+          src="/vertex-logo.png"
+          alt="Vertex"
+          className="vertex-logo"
+        />
 
         <div className="layout" style={{ gridTemplateColumns: `${editorPanelWidth}% 10px 1fr` }}>
           <section className="editor-panel">
             <div className="panel-header">
               <div className="panel-title">
                 <h2>Teacher's Slate</h2>
-                <select
-                  className="language-selector"
-                  value={currentLanguage}
-                  onChange={(e) => {
-                    const selectedLang = SUPPORTED_LANGUAGES.find(lang => lang.id === e.target.value);
-                    setCurrentLanguage(selectedLang.id);
-                    setCurrentFilename(`practice.${selectedLang.id === "java" ? "java" : selectedLang.id === "c" ? "c" : selectedLang.id === "cpp" ? "cpp" : "js"}`); // Basic file naming
-                    setCurrentLesson(""); // Clear lesson on language change
-                    setProgressIndex(0);
-                    setErrorIndex(null);
-                    setErrorCount(0);
-                    setErrorMessage("");
-                    setCompileStatus("idle");
-                    setLiveAnalysis("");
-                    studentEditorRef.current?.setValue(""); // Clear student editor
-                  }}
-                >
-                  {SUPPORTED_LANGUAGES.map((lang) => (
-                    <option key={lang.id} value={lang.id}>
-                      {lang.name}
-                    </option>
-                  ))}
-                </select>
-                <span className="file-badge">{currentFilename}</span>
+                <div className="filename-container">
+                  {isEditingFilename ? (
+                    <input
+                      type="text"
+                      className="filename-input"
+                      value={currentFilename}
+                      autoFocus
+                      onBlur={() => setIsEditingFilename(false)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') setIsEditingFilename(false);
+                      }}
+                      onChange={(e) => setCurrentFilename(e.target.value)}
+                    />
+                  ) : (
+                    <span
+                      className="file-badge clickable"
+                      onClick={() => setIsEditingFilename(true)}
+                    >
+                      {currentFilename}
+                    </span>
+                  )}
+                </div>
               </div>
+
+              <div className="panel-actions">
+                <button className="clear-button" onClick={handleClear}>
+                  Clear
+                </button>
+              </div>
+
               <div className="theme-selector-container">
                 <label htmlFor="theme-select">Theme:</label>
                 <select
@@ -489,9 +534,6 @@ const App = () => {
                 />
                 <span>{opacity.toFixed(2)}</span>
               </div>
-              <button className="compile-button" type="button" onClick={handleCompile}>
-                Run
-              </button>
             </div>
             <div className="editor-stack">
               <div className="ghost-layer">
@@ -536,6 +578,12 @@ const App = () => {
                     scrollBeyondLastLine: false
                   }}
                 />
+                <CodeVisualizer
+                  editor={studentEditorRef.current}
+                  monaco={monacoRef.current}
+                  code={studentCode}
+                  language={currentLanguage}
+                />
               </div>
             </div>
             {compileStatus === "error" && errorIndex !== null && (
@@ -551,11 +599,7 @@ const App = () => {
           <div className="resizer" onMouseDown={handleMouseDown}></div>
 
           <Terminal
-            output={compilerOutput}
-            error={compilerError}
-            isCompiling={isCompiling}
-            onRun={handleCompile}
-            onInput={(input) => setTestInput(input)}
+            code={studentCode}
             currentLanguage={currentLanguage}
             currentFilename={currentFilename}
           />

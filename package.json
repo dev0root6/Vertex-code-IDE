@@ -16,7 +16,9 @@
     "cors": "^2.8.6",
     "express": "^4.22.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-xarrows": "^2.0.2",
+    "three": "^0.160.0"
   },
   "devDependencies": {
     "@types/node": "^25.2.2",

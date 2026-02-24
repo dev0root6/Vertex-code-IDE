@@ -1,25 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { sendShellInput } from './compiler-service.js';
 
 const Terminal = ({
-    output,
-    error,
-    isCompiling,
-    onRun,
-    onInput, // This will be used to set the STDIN for the next run
+    code,
     currentLanguage,
     currentFilename
 }) => {
     const [history, setHistory] = useState([
-        { type: 'system', content: 'CoTra-IDE Terminal v1.1.0' },
-        { type: 'system', content: 'Enter input in the STDIN box below if your code requires it.' },
-        { type: 'system', content: 'Type "run" to execute.' }
+        { type: 'system', content: 'Vertex Terminal v2.0' },
+        { type: 'system', content: 'Type commands directly. e.g. python code.py, node code.js' },
     ]);
     const [inputBuffer, setInputBuffer] = useState('');
-    const [stdinBuffer, setStdinBuffer] = useState('');
+    const [isExecuting, setIsExecuting] = useState(false);
+    const [commandHistory, setCommandHistory] = useState([]);
+    const [historyIndex, setHistoryIndex] = useState(-1);
     const bottomRef = useRef(null);
     const inputRef = useRef(null);
-
-    // ... scroll effect
 
     // Auto-scroll to bottom
     useEffect(() => {
@@ -28,40 +24,119 @@ const Terminal = ({
 
     // Focus input on click
     const handleContainerClick = (e) => {
-        // Don't focus terminal input if clicking in STDIN area
-        if (e.target.closest('.terminal-stdin-area')) return;
         inputRef.current?.focus();
     };
 
-    // Handle external execution
-    useEffect(() => {
-        if (isCompiling) {
-            setHistory(prev => [...prev, { type: 'command', content: `running ${currentFilename}...` }]);
-        }
-    }, [isCompiling, currentFilename]);
-
-    // Handle output/error updates
-    useEffect(() => {
-        if (output) {
-            setHistory(prev => [...prev, { type: 'output', content: output }]);
-        }
-        if (error) {
-            setHistory(prev => [...prev, { type: 'error', content: error }]);
-        }
-    }, [output, error]);
-
-    const handleKeyDown = (e) => {
+    const handleKeyDown = async (e) => {
         if (e.key === 'Enter') {
-            const command = inputBuffer.trim();
-            setHistory(prev => [...prev, { type: 'command', content: command }]);
+            const command = inputBuffer;
+
+            if (isExecuting) {
+                // If executing, send typing directly to process stdin
+                setHistory(prev => [...prev, { type: 'command', content: command }]);
+                setInputBuffer('');
+                await sendShellInput(command);
+                return;
+            }
+
+            const trimmedCommand = command.trim();
+            if (!trimmedCommand) return;
+
+            setHistory(prev => [...prev, { type: 'command', content: trimmedCommand }]);
+            setCommandHistory(prev => [trimmedCommand, ...prev]);
+            setHistoryIndex(-1);
             setInputBuffer('');
 
-            if (command.toLowerCase() === 'clear') {
+            if (trimmedCommand.toLowerCase() === 'clear') {
                 setHistory([]);
-            } else if (command.toLowerCase() === 'run') {
-                onRun();
+                return;
+            }
+
+            if (trimmedCommand.toLowerCase() === 'help') {
+                setHistory(prev => [...prev,
+                { type: 'system', content: 'Commands: python <f>, node <f>, gcc <f> -o out, g++ <f> -o out, javac <f>, ls, cat <f>, clear' },
+                { type: 'system', content: 'Tip: Type directly when a program asks for input (e.g. input())' },
+                ]);
+                return;
+            }
+
+            // Execute real shell command – linked to local .temp/
+            setIsExecuting(true);
+
+            try {
+                const response = await fetch('http://localhost:5000/api/shell', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: trimmedCommand, code, filename: currentFilename })
+                });
+
+                if (!response.body) throw new Error("No response body");
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let chunkBuffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    chunkBuffer += decoder.decode(value, { stream: true });
+                    const lines = chunkBuffer.split('\n');
+                    chunkBuffer = lines.pop(); // Last partial line
+
+                    for (const line of lines) {
+                        const trimmedLine = line.trim();
+                        if (!trimmedLine) continue;
+
+                        try {
+                            const data = JSON.parse(trimmedLine);
+                            if (data.type === 'stdout') {
+                                setHistory(prev => [...prev, { type: 'output', content: data.content }]);
+                            } else if (data.type === 'stderr' || data.type === 'error') {
+                                setHistory(prev => [...prev, { type: 'error', content: data.content }]);
+                            }
+                        } catch (err) {
+                            // Raw output or malformed JSON
+                            setHistory(prev => [...prev, { type: 'output', content: trimmedLine }]);
+                        }
+                    }
+                }
+
+                // Process final chunk if program ended without newline
+                if (chunkBuffer.trim()) {
+                    try {
+                        const data = JSON.parse(chunkBuffer.trim());
+                        if (data.type === 'stdout') {
+                            setHistory(prev => [...prev, { type: 'output', content: data.content }]);
+                        } else if (data.type === 'stderr' || data.type === 'error') {
+                            setHistory(prev => [...prev, { type: 'error', content: data.content }]);
+                        }
+                    } catch (err) {
+                        setHistory(prev => [...prev, { type: 'output', content: chunkBuffer.trim() }]);
+                    }
+                }
+            } catch (err) {
+                console.error("Terminal Connection Error:", err);
+                setHistory(prev => [...prev, { type: 'error', content: `Terminal Error: ${err.message}` }]);
+            } finally {
+                setIsExecuting(false);
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (commandHistory.length > 0) {
+                const newIndex = Math.min(historyIndex + 1, commandHistory.length - 1);
+                setHistoryIndex(newIndex);
+                setInputBuffer(commandHistory[newIndex]);
+            }
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (historyIndex > 0) {
+                const newIndex = historyIndex - 1;
+                setHistoryIndex(newIndex);
+                setInputBuffer(commandHistory[newIndex]);
             } else {
-                setHistory(prev => [...prev, { type: 'error', content: `Command not found: ${command}` }]);
+                setHistoryIndex(-1);
+                setInputBuffer('');
             }
         }
     };
@@ -74,55 +149,25 @@ const Terminal = ({
                     <span className="terminal-dot yellow"></span>
                     <span className="terminal-dot green"></span>
                 </div>
-                <div className="terminal-title">user@cotra: ~/{currentLanguage}</div>
-            </div>
-
-            {/* STDIN Area - Explicit Input Field */}
-            <div className="terminal-stdin-area" style={{
-                padding: '8px 16px',
-                borderBottom: '1px solid var(--panel-border)',
-                background: 'rgba(0,0,0,0.2)'
-            }}>
-                <label style={{
-                    display: 'block',
-                    fontSize: '11px',
-                    color: 'var(--muted)',
-                    marginBottom: '4px',
-                    fontFamily: 'var(--font-header)'
-                }}>
-                    PROGRAM INPUT (STDIN)
-                </label>
-                <textarea
-                    value={stdinBuffer}
-                    onChange={(e) => {
-                        setStdinBuffer(e.target.value);
-                        if (onInput) onInput(e.target.value);
-                    }}
-                    placeholder="Enter input here before running (e.g. 10 20)..."
-                    style={{
-                        width: '100%',
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'var(--accent)',
-                        fontFamily: 'inherit',
-                        fontSize: '13px',
-                        resize: 'none',
-                        outline: 'none',
-                        height: '24px', // Compact height
-                        overflow: 'hidden'
-                    }}
-                />
+                <div className="terminal-title">
+                    <span>user@vertex: ~/{currentLanguage} | {currentFilename}</span>
+                </div>
             </div>
 
             <div className="terminal-body">
                 {history.map((line, index) => (
                     <div key={index} className={`terminal-line ${line.type}`}>
-                        {line.type === 'command' && <span className="prompt">➜ ~ </span>}
+                        {line.type === 'command' && <span className="prompt">$ </span>}
                         <span className="content">{line.content}</span>
                     </div>
                 ))}
+                {isExecuting && (
+                    <div className="terminal-line system">
+                        <span className="content" style={{ color: 'var(--accent)' }}>executing...</span>
+                    </div>
+                )}
                 <div className="terminal-input-line">
-                    <span className="prompt">➜ ~ </span>
+                    <span className="prompt">{isExecuting ? '>> ' : '$ '}</span>
                     <input
                         ref={inputRef}
                         type="text"
@@ -132,6 +177,7 @@ const Terminal = ({
                         onKeyDown={handleKeyDown}
                         spellCheck="false"
                         autoComplete="off"
+                        placeholder={isExecuting ? "type input for program..." : ""}
                     />
                 </div>
                 <div ref={bottomRef} />
