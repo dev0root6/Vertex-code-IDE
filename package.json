@@ -1,0 +1,220 @@
+{
+  "name": "vertex-vscode",
+  "displayName": "Vertex",
+  "description": "Vertex: The Visual Learning IDE for VS Code",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.107.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:python",
+    "onLanguage:c",
+    "onLanguage:cpp",
+    "onLanguage:java"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "vertex.resetApiKey",
+        "title": "Vertex: Reset Gemini API Key"
+      },
+      {
+        "command": "vertex.loadLesson",
+        "title": "Vertex: Load Sample Lesson"
+      },
+      {
+        "command": "vertex.clearLesson",
+        "title": "Vertex: Clear Lesson"
+      },
+      {
+        "command": "vertex.showVisualizer",
+        "title": "Vertex: Show Visual Intelligence"
+      },
+      {
+        "command": "vertex.runCode",
+        "title": "Vertex: Run Current Code"
+      },
+      {
+        "command": "vertex.askSensei",
+        "title": "Vertex: Ask Sensei for Code"
+      },
+      {
+        "command": "vertex.toggleVisualizer",
+        "title": "Vertex: Toggle Visual Intelligence"
+      },
+      {
+        "command": "vertex.selectModel",
+        "title": "Vertex: Select Gemini Model"
+      },
+      {
+        "command": "vertex.resetGeminiKey",
+        "title": "Vertex: Reset Gemini API Key",
+        "category": "Vertex"
+      },
+      {
+        "command": "vertex.resetOpenRouterKey",
+        "title": "Vertex: Reset OpenRouter API Key",
+        "category": "Vertex"
+      },
+      {
+        "command": "vertex.resetOllamaKey",
+        "title": "Vertex: Reset Ollama Cloud API Key",
+        "category": "Vertex"
+      },
+      {
+        "command": "vertex.resetAllKeys",
+        "title": "Vertex: Reset ALL API Keys",
+        "category": "Vertex"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "vertex-explorer",
+          "title": "Vertex",
+          "icon": "$(eye)"
+        }
+      ]
+    },
+    "views": {
+      "vertex-explorer": [
+        {
+          "type": "webview",
+          "id": "vertex.visualizer",
+          "name": "Visual Intelligence",
+          "icon": "$(graph-line)",
+          "visibility": "visible"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "vertex.askSensei",
+        "key": "ctrl+i",
+        "mac": "cmd+i",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "vertex.toggleVisualizer",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "vertex.selectModel",
+        "key": "ctrl+j",
+        "mac": "cmd+j",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "vertex.changeProvider",
+        "key": "ctrl+h",
+        "mac": "cmd+h",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "Vertex",
+      "properties": {
+        "vertex.aiProvider": {
+          "type": "string",
+          "default": "Gemini",
+          "description": "Fallback provider if service-specific providers are not set.",
+          "enum": [
+            "Local Model (Ollama)",
+            "Ollama Cloud",
+            "OpenRouter",
+            "Gemini"
+          ]
+        },
+        "vertex.senseiProvider": {
+          "type": "string",
+          "default": "Gemini",
+          "description": "Provider specifically for Sensei's motivational feedback and insights.",
+          "enum": [
+            "Local Model (Ollama)",
+            "Ollama Cloud",
+            "OpenRouter",
+            "Gemini"
+          ]
+        },
+        "vertex.senseiModel": {
+          "type": "string",
+          "default": "gemini-2.0-flash",
+          "description": "Model used by Sensei for mentoring."
+        },
+        "vertex.codeGenProvider": {
+          "type": "string",
+          "default": "Gemini",
+          "description": "Provider specifically for 'Ask Sensei' and auto-completions.",
+          "enum": [
+            "Local Model (Ollama)",
+            "Ollama Cloud",
+            "OpenRouter",
+            "Gemini"
+          ]
+        },
+        "vertex.codeGenModel": {
+          "type": "string",
+          "default": "gemini-2.0-flash",
+          "description": "Model used for code generation."
+        },
+        "vertex.ollamaEndpoint": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "The endpoint for your Local Ollama instance."
+        },
+        "vertex.ollamaModel": {
+          "type": "string",
+          "default": "llama3",
+          "description": "The local model name to use with Ollama (e.g., llama3, mistral, phi3)."
+        },
+        "vertex.geminiModel": {
+          "type": "string",
+          "default": "gemini-2.0-flash",
+          "description": "The Gemini model to use for Sensei's motivational feedback.",
+          "enum": [
+            "gemini-2.5-flash",
+            "gemini-2.5-flash-lite",
+            "gemini-2.5-pro",
+            "gemini-2.0-flash",
+            "gemini-2.0-flash-exp"
+          ]
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.109.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^10.0.2",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.54.0",
+    "webpack": "^5.104.1",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1"
+  }
+}
