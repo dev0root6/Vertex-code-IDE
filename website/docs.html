@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertex Documentation - Complete Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .docs-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            padding: 2rem 0;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .docs-sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .docs-sidebar h3 {
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+        
+        .docs-nav {
+            list-style: none;
+        }
+        
+        .docs-nav li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .docs-nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: block;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .docs-nav a:hover,
+        .docs-nav a.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .docs-content {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .docs-section {
+            margin-bottom: 3rem;
+            scroll-margin-top: 100px;
+        }
+        
+        .docs-section h2 {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .docs-section h3 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-light);
+        }
+        
+        .step-card {
+            background: var(--bg-darker);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+        
+        .command-box {
+            background: var(--bg-darker);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            border-left: 3px solid var(--success);
+            position: relative;
+        }
+        
+        .command-box code {
+            color: var(--primary-light);
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .command-box:hover .copy-btn {
+            opacity: 1;
+        }
+        
+        .info-box {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--radius-sm);
+        }
+        
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--radius-sm);
+        }
+        
+        .success-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--radius-sm);
+        }
+        
+        .api-method {
+            background: var(--bg-darker);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        .api-signature {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 0.5rem;
+        }
+        
+        .api-params {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        
+        .api-params li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .param-name {
+            color: var(--primary-light);
+            font-weight: 600;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+        
+        .param-type {
+            color: var(--success);
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 2rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        @media (max-width: 768px) {
+            .docs-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .docs-sidebar {
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-cube"></i>
+                <span>Vertex</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#getting-started">Getting Started</a></li>
+                <li><a href="#configuration">Configuration</a></li>
+                <li><a href="#api">API</a></li>
+                <li><a href="index.html" class="btn-secondary">Back to Home</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Docs Hero -->
+    <section class="hero" style="padding: 4rem 0 2rem;">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Documentation</span>
+            </div>
+            <h1>Complete Documentation</h1>
+            <p class="hero-description">
+                Everything you need to master Vertex - from installation to advanced API usage
+            </p>
+        </div>
+    </section>
+
+    <!-- Documentation Content -->
+    <div class="container">
+        <div class="docs-container">
+            <!-- Sidebar Navigation -->
+            <aside class="docs-sidebar">
+                <h3>Table of Contents</h3>
+                <ul class="docs-nav">
+                    <li><a href="#getting-started">Getting Started</a></li>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#first-lesson">Your First Lesson</a></li>
+                    <li><a href="#configuration">Configuration</a></li>
+                    <li><a href="#ai-providers">AI Providers</a></li>
+                    <li><a href="#features">Features Guide</a></li>
+                    <li><a href="#teachers-slate">Teacher's Slate</a></li>
+                    <li><a href="#visualizer">Visual Intelligence</a></li>
+                    <li><a href="#sensei">Sensei AI</a></li>
+                    <li><a href="#api">API Reference</a></li>
+                    <li><a href="#commands">Commands</a></li>
+                    <li><a href="#keyboard-shortcuts">Keyboard Shortcuts</a></li>
+                    <li><a href="#troubleshooting">Troubleshooting</a></li>
+                    <li><a href="#examples">Examples</a></li>
+                </ul>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="docs-content">
+                <!-- Getting Started -->
+                <section id="getting-started" class="docs-section">
+                    <h2><i class="fas fa-rocket"></i> Getting Started</h2>
+                    
+                    <p>Welcome to Vertex! This guide will help you get up and running in minutes.</p>
+                    
+                    <h3>Prerequisites</h3>
+                    <ul>
+                        <li>Visual Studio Code v1.107.0 or higher</li>
+                        <li>An API key from one of the supported providers (optional for Local Ollama)</li>
+                        <li>Internet connection (for cloud-based AI providers)</li>
+                    </ul>
+                    
+                    <div class="info-box">
+                        <strong><i class="fas fa-info-circle"></i> Note:</strong> If you plan to use Local Ollama, you don't need an API key. Install Ollama from <a href="https://ollama.ai" target="_blank">ollama.ai</a> and you're good to go!
+                    </div>
+                </section>
+
+                <!-- Installation -->
+                <section id="installation" class="docs-section">
+                    <h2><i class="fas fa-download"></i> Installation</h2>
+                    
+                    <div class="step-card">
+                        <h4><span class="step-number">1</span> Open VS Code</h4>
+                        <p>Launch Visual Studio Code on your machine.</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4><span class="step-number">2</span> Open Extensions Marketplace</h4>
+                        <p>Press <kbd>Ctrl+Shift+X</kbd> (Windows/Linux) or <kbd>Cmd+Shift+X</kbd> (Mac)</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4><span class="step-number">3</span> Search for Vertex</h4>
+                        <p>Type "Vertex" in the search box and look for "Vertex - The Visual Learning IDE"</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4><span class="step-number">4</span> Install the Extension</h4>
+                        <p>Click the "Install" button and wait for the installation to complete.</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4><span class="step-number">5</span> Configure Your API Key</h4>
+                        <p>When you first use an AI feature, Vertex will prompt you to enter your API key. It will be stored securely in VS Code's Secret Storage.</p>
+                    </div>
+                    
+                    <div class="success-box">
+                        <strong><i class="fas fa-check-circle"></i> Installation Complete!</strong> You should see the Vertex icon in your Activity Bar.
+                    </div>
+                </section>
+
+                <!-- First Lesson -->
+                <section id="first-lesson" class="docs-section">
+                    <h2><i class="fas fa-graduation-cap"></i> Your First Lesson</h2>
+                    
+                    <p>Let's start with a simple coding lesson to experience Vertex's core features.</p>
+                    
+                    <h3>Step 1: Create or Open a File</h3>
+                    <p>Open any JavaScript, Python, or other supported language file. If you don't have one, create a new file:</p>
+                    <div class="command-box">
+                        <code>File → New File → Select Language (e.g., JavaScript)</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    
+                    <h3>Step 2: Load a Sample Lesson</h3>
+                    <p>Open the Command Palette and run the lesson command:</p>
+                    <div class="command-box">
+                        <code>Ctrl+Shift+P → Vertex: Load Sample Lesson</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    
+                    <h3>Step 3: Follow the Ghost Text</h3>
+                    <p>You'll see gray ghost text appear in your editor. Start typing to follow along:</p>
+                    <ul>
+                        <li>✅ Correct characters stay gray</li>
+                        <li>❌ Incorrect characters turn red</li>
+                        <li>🎯 Ghost text shows you what to type next</li>
+                    </ul>
+                    
+                    <h3>Step 4: Open Visual Intelligence</h3>
+                    <p>See your code relationships in real-time:</p>
+                    <div class="command-box">
+                        <code>Ctrl+Shift+V → Visual Intelligence panel opens</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    
+                    <div class="info-box">
+                        <strong><i class="fas fa-lightbulb"></i> Tip:</strong> Watch the visualizer update as you type. You'll see arrows connecting your variables and function calls in real-time!
+                    </div>
+                </section>
+
+                <!-- Configuration -->
+                <section id="configuration" class="docs-section">
+                    <h2><i class="fas fa-cog"></i> Configuration</h2>
+                    
+                    <p>Customize Vertex to match your preferences and workflow.</p>
+                    
+                    <h3>Accessing Settings</h3>
+                    <div class="command-box">
+                        <code>File → Preferences → Settings → Search "Vertex"</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    
+                    <h3>Available Settings</h3>
+                    
+                    <div class="api-method">
+                        <h4>AI Provider Settings</h4>
+                        <ul class="api-params">
+                            <li>
+                                <span class="param-name">vertex.aiProvider</span>
+                                <span class="param-type">string</span>
+                                <p>Global fallback AI provider. Options: Gemini, OpenRouter, Ollama Cloud, Local Model (Ollama)</p>
+                                <p><strong>Default:</strong> "Gemini"</p>
+                            </li>
+                            <li>
+                                <span class="param-name">vertex.senseiProvider</span>
+                                <span class="param-type">string</span>
+                                <p>Provider for Sensei's motivational feedback</p>
+                                <p><strong>Default:</strong> "Gemini"</p>
+                            </li>
+                            <li>
+                                <span class="param-name">vertex.codeGenProvider</span>
+                                <span class="param-type">string</span>
+                                <p>Provider for code generation</p>
+                                <p><strong>Default:</strong> "Gemini"</p>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="api-method">
+                        <h4>Model Settings</h4>
+                        <ul class="api-params">
+                            <li>
+                                <span class="param-name">vertex.senseiModel</span>
+                                <span class="param-type">string</span>
+                                <p>Model used by Sensei for mentoring</p>
+                                <p><strong>Default:</strong> "gemini-2.0-flash"</p>
+                            </li>
+                            <li>
+                                <span class="param-name">vertex.codeGenModel</span>
+                                <span class="param-type">string</span>
+                                <p>Model used for code generation</p>
+                                <p><strong>Default:</strong> "gemini-2.0-flash"</p>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="api-method">
+                        <h4>Ollama Settings</h4>
+                        <ul class="api-params">
+                            <li>
+                                <span class="param-name">vertex.ollamaEndpoint</span>
+                                <span class="param-type">string</span>
+                                <p>Endpoint URL for local Ollama instance</p>
+                                <p><strong>Default:</strong> "http://localhost:11434"</p>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- AI Providers -->
+                <section id="ai-providers" class="docs-section">
+                    <h2><i class="fas fa-brain"></i> AI Providers Setup</h2>
+                    
+                    <h3>Google Gemini</h3>
+                    <div class="step-card">
+                        <h4><span class="step-number">1</span> Get Your API Key</h4>
+                        <p>Visit <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a> and create an API key.</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4><span class="step-number">2</span> Configure in Vertex</h4>
+                        <div class="command-box">
+                            <code>Ctrl+Shift+P → Vertex: Reset Gemini API Key</code>
+                            <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4><span class="step-number">3</span> Select Model</h4>
+                        <p>Available models:</p>
+                        <ul>
+                            <li><code>gemini-2.0-flash</code> - Fastest, great for learning</li>
+                            <li><code>gemini-2.5-flash</code> - Balanced speed and capability</li>
+                            <li><code>gemini-2.5-pro</code> - Most capable, best for complex tasks</li>
+                            <li><code>gemini-1.5-flash-latest</code> - Latest stable version</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>OpenRouter</h3>
+                    <p>OpenRouter gives you access to multiple AI models through a single API.</p>
+                    <div class="step-card">
+                        <h4><span class="step-number">1</span> Sign Up</h4>
+                        <p>Create an account at <a href="https://openrouter.ai" target="_blank">openrouter.ai</a></p>
+                    </div>
+                    <div class="step-card">
+                        <h4><span class="step-number">2</span> Get API Key</h4>
+                        <p>Navigate to your account settings and generate an API key</p>
+                    </div>
+                    <div class="step-card">
+                        <h4><span class="step-number">3</span> Configure</h4>
+                        <div class="command-box">
+                            <code>Ctrl+Shift+P → Vertex: Reset OpenRouter API Key</code>
+                            <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                        </div>
+                    </div>
+                    
+                    <h3>Local Ollama (Recommended for Privacy)</h3>
+                    <div class="success-box">
+                        <strong><i class="fas fa-shield-alt"></i> Privacy First:</strong> Local Ollama runs entirely on your machine. No data leaves your computer!
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4><span class="step-number">1</span> Install Ollama</h4>
+                        <p>Download from <a href="https://ollama.ai" target="_blank">ollama.ai</a> and follow installation instructions</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4><span class="step-number">2</span> Pull a Model</h4>
+                        <div class="command-box">
+                            <code>ollama pull codellama</code>
+                            <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <p>Popular models: <code>codellama</code>, <code>llama3</code>, <code>mistral</code></p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4><span class="step-number">3</span> Configure Vertex</h4>
+                        <p>In VS Code settings, set:</p>
+                        <ul>
+                            <li><code>vertex.aiProvider</code> → "Local Model (Ollama)"</li>
+                            <li><code>vertex.ollamaEndpoint</code> → "http://localhost:11434"</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Features Guide -->
+                <section id="features" class="docs-section">
+                    <h2><i class="fas fa-star"></i> Features Guide</h2>
+                    
+                    <!-- Teacher's Slate -->
+                    <section id="teachers-slate">
+                        <h3>Teacher's Slate (Interactive Learning)</h3>
+                        <p>Ghost text that guides you character-by-character through code.</p>
+                        
+                        <h4>How It Works</h4>
+                        <ol>
+                            <li>Load a lesson with <code>Vertex: Load Sample Lesson</code></li>
+                            <li>Ghost text appears showing what to type</li>
+                            <li>Type to follow along - correct characters stay gray</li>
+                            <li>Mistakes are highlighted in red immediately</li>
+                            <li>Sensei provides encouragement as you progress</li>
+                        </ol>
+                        
+                        <h4>Supported Languages</h4>
+                        <div class="languages-grid" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); margin: 1rem 0;">
+                            <div class="language-card">
+                                <i class="fab fa-js"></i>
+                                <span>JavaScript</span>
+                            </div>
+                            <div class="language-card">
+                                <i class="fab fa-python"></i>
+                                <span>Python</span>
+                            </div>
+                            <div class="language-card">
+                                <i class="fab fa-java"></i>
+                                <span>Java</span>
+                            </div>
+                            <div class="language-card">
+                                <i class="fas fa-code"></i>
+                                <span>TypeScript</span>
+                            </div>
+                            <div class="language-card">
+                                <i class="fas fa-copyright"></i>
+                                <span>C / C++</span>
+                            </div>
+                            <div class="language-card">
+                                <i class="fab fa-golang"></i>
+                                <span>Go</span>
+                            </div>
+                        </div>
+                        
+                        <h4>Tips & Tricks</h4>
+                        <ul>
+                            <li>💡 Take your time - it's not a race!</li>
+                            <li>💡 If you make a mistake, backspace and correct it</li>
+                            <li>💡 Watch the status bar for Sensei's feedback</li>
+                            <li>💡 Clear the lesson anytime with <code>Vertex: Clear Lesson</code></li>
+                        </ul>
+                    </section>
+                    
+                    <!-- Visual Intelligence -->
+                    <section id="visualizer">
+                        <h3>Visual Intelligence</h3>
+                        <p>Dynamic call graphs that visualize code relationships in real-time.</p>
+                        
+                        <h4>Features</h4>
+                        <ul>
+                            <li><strong>Live Arrows:</strong> SVG arrows connect variable usage to definitions</li>
+                            <li><strong>Function Tracing:</strong> See where functions are called and defined</li>
+                            <li><strong>Multi-Language:</strong> Works with 7+ programming languages</li>
+                            <li><strong>Cursor Sync:</strong> Highlights update as you move your cursor</li>
+                            <li><strong>Real-time Updates:</strong> Graph updates as you type</li>
+                        </ul>
+                        
+                        <h4>Opening the Visualizer</h4>
+                        <div class="command-box">
+                            <code>Ctrl+Shift+P → Vertex: Show Visual Intelligence</code>
+                            <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <p>Or use the keyboard shortcut: <kbd>Ctrl+Shift+V</kbd> / <kbd>Cmd+Shift+V</kbd></p>
+                        
+                        <h4>What Gets Visualized?</h4>
+                        <ul>
+                            <li>Variable definitions and usages</li>
+                            <li>Function definitions and calls</li>
+                            <li>Parameter usages within functions</li>
+                            <li>Class and method relationships</li>
+                        </ul>
+                    </section>
+                    
+                    <!-- Sensei AI -->
+                    <section id="sensei">
+                        <h3>Sensei AI (Your Coding Mentor)</h3>
+                        <p>Context-aware AI that provides motivational feedback and code assistance.</p>
+                        
+                        <h4>Capabilities</h4>
+                        <ul>
+                            <li><strong>Motivational Feedback:</strong> Encouragement as you learn</li>
+                            <li><strong>Code Generation:</strong> Ask Sensei to write code for you</li>
+                            <li><strong>Context Awareness:</strong> Understands what you're working on</li>
+                            <li><strong>Smart Debouncing:</strong> Only speaks up when needed</li>
+                        </ul>
+                        
+                        <h4>Asking Sensei for Help</h4>
+                        <div class="command-box">
+                            <code>Ctrl+I → Describe what code you need</code>
+                            <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                        </div>
+                        
+                        <h4>Example Prompts</h4>
+                        <ul>
+                            <li>"Create a function that sorts an array"</li>
+                            <li>"Write a class for managing user authentication"</li>
+                            <li>"Add error handling to this function"</li>
+                            <li>"Refactor this code to use async/await"</li>
+                        </ul>
+                        
+                        <div class="info-box">
+                            <strong><i class="fas fa-magic"></i> Pro Tip:</strong> The more specific your prompt, the better Sensei's response!
+                        </div>
+                    </section>
+                </section>
+
+                <!-- API Reference -->
+                <section id="api" class="docs-section">
+                    <h2><i class="fas fa-code"></i> API Reference</h2>
+                    
+                    <p>Complete API documentation for developers extending or integrating with Vertex.</p>
+                    
+                    <div class="info-box">
+                        <strong><i class="fas fa-book"></i> Full API Docs:</strong> For extensive API documentation, see <a href="../DOCS.md">DOCS.md</a> in the repository.
+                    </div>
+                    
+                    <h3>Core Services</h3>
+                    
+                    <div class="api-method">
+                        <h4>AIService</h4>
+                        <div class="api-signature">
+                            AIService.getInstance(): AIService
+                        </div>
+                        <p>Get the singleton instance of the AI service.</p>
+                        
+                        <h5>Methods:</h5>
+                        <ul class="api-params">
+                            <li>
+                                <span class="param-name">initialize(context)</span>
+                                <span class="param-type">Promise&lt;boolean&gt;</span>
+                                <p>Initialize the service with extension context</p>
+                            </li>
+                            <li>
+                                <span class="param-name">generateSenseiResponse(code, context)</span>
+                                <span class="param-type">Promise&lt;string&gt;</span>
+                                <p>Generate motivational feedback from Sensei</p>
+                            </li>
+                            <li>
+                                <span class="param-name">generateCode(prompt, language)</span>
+                                <span class="param-type">Promise&lt;string&gt;</span>
+                                <p>Generate code based on natural language prompt</p>
+                            </li>
+                            <li>
+                                <span class="param-name">listModels(provider)</span>
+                                <span class="param-type">Promise&lt;string[]&gt;</span>
+                                <p>List available models for a provider</p>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="api-method">
+                        <h4>TeacherSlateService</h4>
+                        <div class="api-signature">
+                            TeacherSlateService.getInstance(): TeacherSlateService
+                        </div>
+                        <p>Manage interactive learning sessions.</p>
+                        
+                        <h5>Methods:</h5>
+                        <ul class="api-params">
+                            <li>
+                                <span class="param-name">setLesson(code)</span>
+                                <span class="param-type">void</span>
+                                <p>Start a lesson with the provided code</p>
+                            </li>
+                            <li>
+                                <span class="param-name">deactivate()</span>
+                                <span class="param-type">void</span>
+                                <p>End the current lesson</p>
+                            </li>
+                            <li>
+                                <span class="param-name">showFeedback(message)</span>
+                                <span class="param-type">void</span>
+                                <p>Display inline feedback from Sensei</p>
+                            </li>
+                            <li>
+                                <span class="param-name">isActive()</span>
+                                <span class="param-type">boolean</span>
+                                <p>Check if a lesson is currently active</p>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="api-method">
+                        <h4>ParserService</h4>
+                        <div class="api-signature">
+                            ParserService.parse(code, languageId): Relationship[]
+                        </div>
+                        <p>Parse code to extract relationships.</p>
+                        
+                        <h5>Parameters:</h5>
+                        <ul class="api-params">
+                            <li>
+                                <span class="param-name">code</span>
+                                <span class="param-type">string</span>
+                                <p>Source code to parse</p>
+                            </li>
+                            <li>
+                                <span class="param-name">languageId</span>
+                                <span class="param-type">string</span>
+                                <p>Language identifier (javascript, python, etc.)</p>
+                            </li>
+                        </ul>
+                        
+                        <h5>Returns:</h5>
+                        <p>Array of <code>Relationship</code> objects containing start and end definitions</p>
+                    </div>
+                </section>
+
+                <!-- Commands -->
+                <section id="commands" class="docs-section">
+                    <h2><i class="fas fa-terminal"></i> Commands Reference</h2>
+                    
+                    <h3>Learning Commands</h3>
+                    <div class="command-box">
+                        <code>Vertex: Load Sample Lesson</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <p>Start a guided coding lesson with ghost text</p>
+                    
+                    <div class="command-box">
+                        <code>Vertex: Clear Lesson</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <p>Clear all decorations and end the active lesson</p>
+                    
+                    <h3>AI Commands</h3>
+                    <div class="command-box">
+                        <code>Vertex: Ask Sensei for Code</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <p>Get AI-powered code suggestions (Keyboard: <kbd>Ctrl+I</kbd> / <kbd>Cmd+I</kbd>)</p>
+                    
+                    <div class="command-box">
+                        <code>Vertex: Select Gemini Model</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <p>Choose which AI model to use (Keyboard: <kbd>Ctrl+J</kbd> / <kbd>Cmd+J</kbd>)</p>
+                    
+                    <h3>Visualization Commands</h3>
+                    <div class="command-box">
+                        <code>Vertex: Show Visual Intelligence</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <p>Open the visual intelligence sidebar</p>
+                    
+                    <div class="command-box">
+                        <code>Vertex: Toggle Visual Intelligence</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <p>Toggle visualizer visibility (Keyboard: <kbd>Ctrl+Shift+V</kbd> / <kbd>Cmd+Shift+V</kbd>)</p>
+                    
+                    <h3>API Key Management</h3>
+                    <div class="command-box">
+                        <code>Vertex: Reset Gemini API Key</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    
+                    <div class="command-box">
+                        <code>Vertex: Reset OpenRouter API Key</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    
+                    <div class="command-box">
+                        <code>Vertex: Reset Ollama Cloud API Key</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    
+                    <div class="command-box">
+                        <code>Vertex: Reset ALL API Keys</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                </section>
+
+                <!-- Keyboard Shortcuts -->
+                <section id="keyboard-shortcuts" class="docs-section">
+                    <h2><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h2>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--primary-color);">
+                                <th style="text-align: left; padding: 0.75rem;">Command</th>
+                                <th style="text-align: left; padding: 0.75rem;">Windows/Linux</th>
+                                <th style="text-align: left; padding: 0.75rem;">Mac</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(99, 102, 241, 0.2);">
+                                <td style="padding: 0.75rem;">Ask Sensei</td>
+                                <td style="padding: 0.75rem;"><kbd>Ctrl+I</kbd></td>
+                                <td style="padding: 0.75rem;"><kbd>Cmd+I</kbd></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(99, 102, 241, 0.2);">
+                                <td style="padding: 0.75rem;">Toggle Visualizer</td>
+                                <td style="padding: 0.75rem;"><kbd>Ctrl+Shift+V</kbd></td>
+                                <td style="padding: 0.75rem;"><kbd>Cmd+Shift+V</kbd></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(99, 102, 241, 0.2);">
+                                <td style="padding: 0.75rem;">Select Model</td>
+                                <td style="padding: 0.75rem;"><kbd>Ctrl+J</kbd></td>
+                                <td style="padding: 0.75rem;"><kbd>Cmd+J</kbd></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(99, 102, 241, 0.2);">
+                                <td style="padding: 0.75rem;">Change Provider</td>
+                                <td style="padding: 0.75rem;"><kbd>Ctrl+H</kbd></td>
+                                <td style="padding: 0.75rem;"><kbd>Cmd+H</kbd></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(99, 102, 241, 0.2);">
+                                <td style="padding: 0.75rem;">Command Palette</td>
+                                <td style="padding: 0.75rem;"><kbd>Ctrl+Shift+P</kbd></td>
+                                <td style="padding: 0.75rem;"><kbd>Cmd+Shift+P</kbd></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- Troubleshooting -->
+                <section id="troubleshooting" class="docs-section">
+                    <h2><i class="fas fa-wrench"></i> Troubleshooting</h2>
+                    
+                    <h3>Ghost text not appearing</h3>
+                    <ul>
+                        <li>✅ Ensure learning mode is active (<code>Vertex: Load Sample Lesson</code>)</li>
+                        <li>✅ Check VS Code inline completion settings are enabled</li>
+                        <li>✅ Verify you're in a supported file type</li>
+                    </ul>
+                    
+                    <h3>Visualizer not updating</h3>
+                    <ul>
+                        <li>✅ Make sure the visualizer panel is visible</li>
+                        <li>✅ Check for syntax errors in your code</li>
+                        <li>✅ Try toggling the visualizer off and on</li>
+                        <li>✅ Verify the language is supported</li>
+                    </ul>
+                    
+                    <h3>AI not responding</h3>
+                    <ul>
+                        <li>✅ Verify API key is configured (<code>Vertex: Reset API Keys</code>)</li>
+                        <li>✅ Check internet connection (for cloud providers)</li>
+                        <li>✅ Ensure you haven't hit rate limits</li>
+                        <li>✅ Try switching to a different provider</li>
+                    </ul>
+                    
+                    <h3>Local Ollama not working</h3>
+                    <ul>
+                        <li>✅ Verify Ollama is installed and running</li>
+                        <li>✅ Check endpoint URL in settings (<code>vertex.ollamaEndpoint</code>)</li>
+                        <li>✅ Ensure you've pulled at least one model</li>
+                        <li>✅ Test with: <code>ollama list</code> in terminal</li>
+                    </ul>
+                    
+                    <div class="warning-box">
+                        <strong><i class="fas fa-exclamation-triangle"></i> Still Having Issues?</strong>
+                        <p>Open an issue on <a href="https://github.com/yourusername/vertex-vscode/issues" target="_blank">GitHub</a> with:</p>
+                        <ul>
+                            <li>VS Code version</li>
+                            <li>Vertex extension version</li>
+                            <li>Console errors (Help → Toggle Developer Tools)</li>
+                            <li>Steps to reproduce the issue</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Examples -->
+                <section id="examples" class="docs-section">
+                    <h2><i class="fas fa-lightbulb"></i> Usage Examples</h2>
+                    
+                    <h3>Example 1: Learning Python</h3>
+                    <div class="command-box">
+                        <code># Open a .py file
+Ctrl+Shift+P → Vertex: Load Sample Lesson
+# Follow the ghost text to learn Python syntax</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    
+                    <h3>Example 2: Generating Code with Sensei</h3>
+                    <div class="command-box">
+                        <code># Press Ctrl+I and describe what you need:
+"Create a React component that displays a user profile with name, avatar, and bio"</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                    
+                    <h3>Example 3: Multi-Provider Setup</h3>
+                    <p>Use fast models for feedback and powerful models for generation:</p>
+                    <ul>
+                        <li><code>vertex.senseiProvider</code> → "Gemini"</li>
+                        <li><code>vertex.senseiModel</code> → "gemini-2.0-flash" (fast)</li>
+                        <li><code>vertex.codeGenProvider</code> → "Gemini"</li>
+                        <li><code>vertex.codeGenModel</code> → "gemini-2.5-pro" (powerful)</li>
+                    </ul>
+                    
+                    <h3>Example 4: Visualizing Complex Code</h3>
+                    <div class="command-box">
+                        <code># Open a file with functions and variables
+Ctrl+Shift+V → Watch arrows connect your code
+# Move cursor to see highlights update</code>
+                        <button class="copy-btn"><i class="fas fa-copy"></i></button>
+                    </div>
+                </section>
+
+                <!-- Footer CTA -->
+                <div style="text-align: center; padding: 2rem; margin-top: 2rem; border-top: 2px solid var(--primary-color);">
+                    <h3>Ready to Start Learning?</h3>
+                    <p style="margin-bottom: 1.5rem;">Install Vertex and transform your coding journey today!</p>
+                    <a href="index.html" class="btn btn-primary btn-lg">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 Vertex. Built with ❤️ for developers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Highlight active section in sidebar
+        const sections = document.querySelectorAll('.docs-section');
+        const navLinks = document.querySelectorAll('.docs-nav a');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+        
+        // Copy button functionality
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const code = this.parentElement.querySelector('code').textContent;
+                try {
+                    await navigator.clipboard.writeText(code);
+                    this.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-copy"></i>';
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy:', err);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

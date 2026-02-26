@@ -1,0 +1,264 @@
+// Mobile Menu Toggle
+document.addEventListener('DOMContentLoaded', () => {
+    const hamburger = document.querySelector('.hamburger');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    if (hamburger) {
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
+    }
+    
+    // Close mobile menu when clicking on a link
+    document.querySelectorAll('.nav-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+            hamburger.classList.remove('active');
+        });
+    });
+    
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Animate elements on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('fade-in');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    // Observe all feature cards, provider cards, and sections
+    document.querySelectorAll('.feature-card, .provider-card, .doc-card, .timeline-item').forEach(el => {
+        observer.observe(el);
+    });
+    
+    // Typing animation for hero code
+    const codeElement = document.querySelector('.code-content code');
+    if (codeElement) {
+        const originalText = codeElement.innerHTML;
+        let index = 0;
+        
+        function typeWriter() {
+            if (index < originalText.length) {
+                codeElement.innerHTML = originalText.substring(0, index + 1);
+                index++;
+                setTimeout(typeWriter, 50);
+            } else {
+                codeElement.innerHTML = originalText; // Restore full formatted text
+            }
+        }
+        
+        // Start typing animation after a delay
+        setTimeout(() => {
+            codeElement.innerHTML = '';
+            typeWriter();
+        }, 1000);
+    }
+    
+    // Navbar background on scroll
+    const navbar = document.querySelector('.navbar');
+    let lastScroll = 0;
+    
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        
+        if (currentScroll > 100) {
+            navbar.style.background = 'rgba(15, 23, 42, 0.95)';
+            navbar.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.3)';
+        } else {
+            navbar.style.background = 'rgba(15, 23, 42, 0.8)';
+            navbar.style.boxShadow = 'none';
+        }
+        
+        lastScroll = currentScroll;
+    });
+    
+    // Parallax effect for hero section
+    const hero = document.querySelector('.hero');
+    
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        if (hero && scrolled < window.innerHeight) {
+            hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+            hero.style.opacity = 1 - (scrolled / window.innerHeight);
+        }
+    });
+    
+    // Stats counter animation
+    const animateCounter = (element, target, duration = 2000) => {
+        let start = 0;
+        const increment = target / (duration / 16);
+        
+        const updateCounter = () => {
+            start += increment;
+            if (start < target) {
+                element.textContent = Math.ceil(start);
+                requestAnimationFrame(updateCounter);
+            } else {
+                element.textContent = target;
+            }
+        };
+        
+        updateCounter();
+    };
+    
+    // Trigger counter animation when stats section is visible
+    const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const statNumbers = entry.target.querySelectorAll('.stat-number');
+                statNumbers.forEach(stat => {
+                    const target = parseInt(stat.textContent);
+                    if (!isNaN(target)) {
+                        animateCounter(stat, target);
+                    }
+                });
+                statsObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+    
+    const heroStats = document.querySelector('.hero-stats');
+    if (heroStats) {
+        statsObserver.observe(heroStats);
+    }
+    
+    // Language card interaction
+    document.querySelectorAll('.language-card:not(.coming-soon)').forEach(card => {
+        card.addEventListener('click', () => {
+            const language = card.querySelector('span').textContent;
+            console.log(`Selected language: ${language}`);
+            // You could add more interaction here, like opening docs for that language
+        });
+    });
+    
+    // Provider card interaction
+    document.querySelectorAll('.provider-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const provider = card.querySelector('h3').textContent;
+            console.log(`Selected provider: ${provider}`);
+            // You could add modal or navigation here
+        });
+    });
+    
+    // Copy code snippet on click
+    document.querySelectorAll('.code-snippet code').forEach(codeBlock => {
+        codeBlock.style.cursor = 'pointer';
+        codeBlock.title = 'Click to copy';
+        
+        codeBlock.addEventListener('click', async () => {
+            const text = codeBlock.textContent;
+            try {
+                await navigator.clipboard.writeText(text);
+                
+                // Visual feedback
+                const originalText = codeBlock.textContent;
+                codeBlock.textContent = '✓ Copied!';
+                codeBlock.style.color = '#10b981';
+                
+                setTimeout(() => {
+                    codeBlock.textContent = originalText;
+                    codeBlock.style.color = '';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+        });
+    });
+    
+    // Feature card hover effect - show more details
+    document.querySelectorAll('.feature-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        });
+    });
+    
+    // Easter egg: Konami code
+    let konamiCode = [];
+    const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    
+    document.addEventListener('keydown', (e) => {
+        konamiCode.push(e.key);
+        konamiCode = konamiCode.slice(-10);
+        
+        if (konamiCode.join(',') === konamiSequence.join(',')) {
+            document.body.style.animation = 'rainbow 5s linear infinite';
+            setTimeout(() => {
+                document.body.style.animation = '';
+            }, 5000);
+        }
+    });
+    
+    // Add CSS for rainbow animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        
+        .nav-menu.active {
+            display: flex;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.98);
+            flex-direction: column;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+    `;
+    document.head.appendChild(style);
+});
+
+// Loading animation
+window.addEventListener('load', () => {
+    document.body.style.opacity = '0';
+    setTimeout(() => {
+        document.body.style.transition = 'opacity 0.5s ease-in';
+        document.body.style.opacity = '1';
+    }, 100);
+});
+
+// Prevent animation on page refresh
+window.addEventListener('beforeunload', () => {
+    document.body.style.opacity = '0';
+});
+
+// Console message for developers
+console.log('%c🌌 Vertex - The Visual Learning IDE', 'font-size: 20px; font-weight: bold; color: #6366f1;');
+console.log('%cInterested in contributing? Check out our GitHub!', 'font-size: 14px; color: #94a3b8;');
+console.log('%chttps://github.com/yourusername/vertex-vscode', 'font-size: 12px; color: #8b5cf6;');

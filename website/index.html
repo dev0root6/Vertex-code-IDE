@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertex - The Visual Learning IDE for VS Code</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-cube"></i>
+                <span>Vertex</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#providers">AI Providers</a></li>
+                <li><a href="#documentation">Docs</a></li>
+                <li><a href="docs.html" class="btn-primary">Get Started</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        Transform Your Editor Into a <span class="gradient-text">Coding Mentor</span>
+                    </h1>
+                    <p class="hero-description">
+                        Vertex is a next-generation VS Code extension that combines ghost-text guidance, 
+                        visual call graphs, and AI-powered mentorship to help you master coding character-by-character.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="docs.html" class="btn btn-primary btn-lg">
+                            <i class="fas fa-download"></i> Get Started
+                        </a>
+                        <a href="#demo" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-play"></i> Watch Demo
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <div class="stat-number">7+</div>
+                            <div class="stat-label">Languages</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">4</div>
+                            <div class="stat-label">AI Providers</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">∞</div>
+                            <div class="stat-label">Possibilities</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="code-window">
+                        <div class="window-header">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <div class="code-content">
+                            <pre><code><span class="keyword">function</span> <span class="function">fibonacci</span>(<span class="param">n</span>) {
+  <span class="keyword">if</span> (n &lt;= <span class="number">1</span>) <span class="keyword">return</span> n;
+  <span class="keyword">return</span> <span class="function">fibonacci</span>(n - <span class="number">1</span>) + <span class="function">fibonacci</span>(n - <span class="number">2</span>);
+}
+
+<span class="keyword">const</span> result = <span class="function">fibonacci</span>(<span class="number">10</span>);
+<span class="ghost-text">// Type along to learn! 👻</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Powerful Features for Learning</h2>
+            <p class="section-subtitle">Everything you need to accelerate your coding journey</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-keyboard"></i>
+                    </div>
+                    <h3>Teacher's Slate</h3>
+                    <p>
+                        Learn by doing with ghost-text guidance. Follow along character-by-character 
+                        with real-time validation and instant feedback on every keystroke.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> Ghost text guidance</li>
+                        <li><i class="fas fa-check"></i> Real-time validation</li>
+                        <li><i class="fas fa-check"></i> Error highlighting</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card featured">
+                    <div class="feature-badge">Most Popular</div>
+                    <div class="feature-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h3>Visual Intelligence</h3>
+                    <p>
+                        See your code come alive with dynamic call graphs. Beautiful SVG arrows 
+                        connect variables to definitions and functions to their calls in real-time.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> Dynamic call graphs</li>
+                        <li><i class="fas fa-check"></i> Live relationship arrows</li>
+                        <li><i class="fas fa-check"></i> 7+ language support</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Sensei AI</h3>
+                    <p>
+                        Your personal coding mentor powered by cutting-edge AI. Get motivational 
+                        feedback, code suggestions, and contextual insights as you learn.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> AI-powered mentoring</li>
+                        <li><i class="fas fa-check"></i> Context-aware feedback</li>
+                        <li><i class="fas fa-check"></i> Smart debouncing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Get started in three simple steps</p>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-number">1</div>
+                    <div class="timeline-content">
+                        <h3>Install & Configure</h3>
+                        <p>
+                            Install Vertex from the VS Code marketplace. Choose your preferred AI provider 
+                            (Gemini, OpenRouter, Ollama) and securely store your API key.
+                        </p>
+                        <div class="code-snippet">
+                            <code>ext install vertex-vscode</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-number">2</div>
+                    <div class="timeline-content">
+                        <h3>Load a Lesson</h3>
+                        <p>
+                            Press <kbd>Ctrl+Shift+P</kbd> and run "Vertex: Load Sample Lesson". 
+                            Choose from JavaScript, Python, Java, C++, and more.
+                        </p>
+                        <div class="code-snippet">
+                            <code>Vertex: Load Sample Lesson</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-number">3</div>
+                    <div class="timeline-content">
+                        <h3>Start Learning</h3>
+                        <p>
+                            Follow the ghost text, watch the visualizer update in real-time, 
+                            and receive encouragement from Sensei as you type.
+                        </p>
+                        <div class="feature-icons-small">
+                            <i class="fas fa-ghost"></i>
+                            <i class="fas fa-chart-network"></i>
+                            <i class="fas fa-user-ninja"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Providers Section -->
+    <section id="providers" class="providers">
+        <div class="container">
+            <h2 class="section-title">Flexible AI Integration</h2>
+            <p class="section-subtitle">Choose the AI provider that works best for you</p>
+            
+            <div class="providers-grid">
+                <div class="provider-card">
+                    <div class="provider-logo">
+                        <i class="fas fa-google"></i>
+                    </div>
+                    <h3>Google Gemini</h3>
+                    <p class="provider-description">
+                        State-of-the-art AI models from Google. Fast, accurate, and perfect for learning.
+                    </p>
+                    <div class="provider-features">
+                        <span class="badge">Default</span>
+                        <span class="badge">Fast</span>
+                    </div>
+                    <ul class="provider-models">
+                        <li>gemini-2.0-flash</li>
+                        <li>gemini-2.5-flash</li>
+                        <li>gemini-2.5-pro</li>
+                        <li>gemini-1.5-flash-latest</li>
+                    </ul>
+                </div>
+
+                <div class="provider-card">
+                    <div class="provider-logo">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3>OpenRouter</h3>
+                    <p class="provider-description">
+                        Access to multiple AI models through one API. Maximum flexibility and choice.
+                    </p>
+                    <div class="provider-features">
+                        <span class="badge">Multi-Model</span>
+                        <span class="badge">Flexible</span>
+                    </div>
+                    <ul class="provider-models">
+                        <li>GPT-4</li>
+                        <li>Claude</li>
+                        <li>Llama</li>
+                        <li>And more...</li>
+                    </ul>
+                </div>
+
+                <div class="provider-card">
+                    <div class="provider-logo">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <h3>Ollama Cloud</h3>
+                    <p class="provider-description">
+                        Cloud-hosted Ollama models for powerful AI without local resource usage.
+                    </p>
+                    <div class="provider-features">
+                        <span class="badge">Cloud</span>
+                        <span class="badge">Scalable</span>
+                    </div>
+                    <ul class="provider-models">
+                        <li>Llama 3</li>
+                        <li>Mistral</li>
+                        <li>CodeLlama</li>
+                        <li>Custom models</li>
+                    </ul>
+                </div>
+
+                <div class="provider-card highlight">
+                    <div class="provider-logo">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h3>Local Ollama</h3>
+                    <p class="provider-description">
+                        Run AI models locally on your machine. Complete privacy and offline capability.
+                    </p>
+                    <div class="provider-features">
+                        <span class="badge">Private</span>
+                        <span class="badge">Offline</span>
+                        <span class="badge">Free</span>
+                    </div>
+                    <ul class="provider-models">
+                        <li>No API key needed</li>
+                        <li>Full privacy</li>
+                        <li>Offline support</li>
+                        <li>Custom models</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Language Support Section -->
+    <section class="languages">
+        <div class="container">
+            <h2 class="section-title">Multi-Language Support</h2>
+            <p class="section-subtitle">Learn your favorite programming language</p>
+            
+            <div class="languages-grid">
+                <div class="language-card">
+                    <i class="fab fa-js"></i>
+                    <span>JavaScript</span>
+                </div>
+                <div class="language-card">
+                    <i class="fab fa-python"></i>
+                    <span>Python</span>
+                </div>
+                <div class="language-card">
+                    <i class="fab fa-java"></i>
+                    <span>Java</span>
+                </div>
+                <div class="language-card">
+                    <i class="fas fa-code"></i>
+                    <span>TypeScript</span>
+                </div>
+                <div class="language-card">
+                    <i class="fas fa-copyright"></i>
+                    <span>C / C++</span>
+                </div>
+                <div class="language-card">
+                    <i class="fab fa-golang"></i>
+                    <span>Go</span>
+                </div>
+                <div class="language-card">
+                    <i class="fab fa-html5"></i>
+                    <span>HTML/CSS</span>
+                </div>
+                <div class="language-card coming-soon">
+                    <i class="fas fa-plus"></i>
+                    <span>More Coming</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="demo">
+        <div class="container">
+            <h2 class="section-title">See Vertex in Action</h2>
+            <p class="section-subtitle">Watch how Vertex transforms your learning experience</p>
+            
+            <div class="demo-container">
+                <div class="demo-video">
+                    <div class="video-placeholder">
+                        <i class="fas fa-play-circle"></i>
+                        <p>Demo Video Coming Soon</p>
+                    </div>
+                </div>
+                
+                <div class="demo-features">
+                    <div class="demo-feature">
+                        <i class="fas fa-magic"></i>
+                        <div>
+                            <h4>Ghost Text in Action</h4>
+                            <p>Watch as ghost text guides you through complex code patterns</p>
+                        </div>
+                    </div>
+                    <div class="demo-feature">
+                        <i class="fas fa-eye"></i>
+                        <div>
+                            <h4>Live Visualizations</h4>
+                            <p>See relationships form as you type with beautiful SVG arrows</p>
+                        </div>
+                    </div>
+                    <div class="demo-feature">
+                        <i class="fas fa-comments"></i>
+                        <div>
+                            <h4>AI Mentorship</h4>
+                            <p>Receive real-time feedback and encouragement from Sensei</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Preview -->
+    <section id="documentation" class="documentation">
+        <div class="container">
+            <h2 class="section-title">Comprehensive Documentation</h2>
+            <p class="section-subtitle">Everything you need to master Vertex</p>
+            
+            <div class="docs-grid">
+                <a href="docs.html" class="doc-card">
+                    <div class="doc-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Getting Started</h3>
+                    <p>Quick installation guide and your first lesson</p>
+                    <span class="doc-link">Read more →</span>
+                </a>
+
+                <a href="docs.html#configuration" class="doc-card">
+                    <div class="doc-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h3>Configuration</h3>
+                    <p>Set up AI providers, models, and preferences</p>
+                    <span class="doc-link">Read more →</span>
+                </a>
+
+                <a href="docs.html#api" class="doc-card">
+                    <div class="doc-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>API Reference</h3>
+                    <p>Complete API documentation for developers</p>
+                    <span class="doc-link">Read more →</span>
+                </a>
+
+                <a href="docs.html#examples" class="doc-card">
+                    <div class="doc-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>Examples</h3>
+                    <p>Code samples and real-world use cases</p>
+                    <span class="doc-link">Read more →</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Transform Your Learning?</h2>
+                <p>Join thousands of developers learning to code with Vertex</p>
+                <div class="cta-buttons">
+                    <a href="docs.html" class="btn btn-primary btn-lg">
+                        <i class="fas fa-download"></i> Install Now
+                    </a>
+                    <a href="https://github.com/yourusername/vertex-vscode" class="btn btn-secondary btn-lg">
+                        <i class="fab fa-github"></i> View on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-cube"></i> Vertex</h3>
+                    <p>The Visual Learning IDE for VS Code</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#providers">AI Providers</a></li>
+                        <li><a href="docs.html">Documentation</a></li>
+                        <li><a href="#">Changelog</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="docs.html">Getting Started</a></li>
+                        <li><a href="docs.html#api">API Reference</a></li>
+                        <li><a href="#">Examples</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Community</h4>
+                    <ul>
+                        <li><a href="#">GitHub</a></li>
+                        <li><a href="#">Discord</a></li>
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Vertex. Built with ❤️ for developers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
