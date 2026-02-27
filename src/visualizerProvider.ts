@@ -177,7 +177,7 @@ export class VisualizerProvider implements vscode.WebviewViewProvider {
                             }
 
                             const curve = Math.min(Math.abs(sy - ey) * 0.45, 80);
-                            const d = `M${ sx },${ sy } C${ sx - curve },${ sy } ${ ex - curve },${ ey } ${ ex },${ ey } `;
+                            const d = 'M' + sx + ',' + sy + ' C' + (sx - curve) + ',' + sy + ' ' + (ex - curve) + ',' + ey + ' ' + ex + ',' + ey;
                             const path = document.createElementNS('http://www.w3.org/2000/svg','path');
                             path.setAttribute('d', d);
                             path.classList.add('arrow-path');

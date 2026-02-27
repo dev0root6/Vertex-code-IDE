@@ -15,7 +15,7 @@ export class ParserService {
     // Keywords that should never be treated as variables
     private static EXCLUDE: Record<string, Set<string>> = {
         javascript: new Set(['if', 'else', 'for', 'while', 'switch', 'catch', 'function', 'const', 'let', 'var', 'class', 'return', 'console', 'require', 'import', 'export', 'new', 'this', 'typeof', 'instanceof', 'true', 'false', 'null', 'undefined', 'void']),
-        typescript: new Set(['if', 'else', 'for', 'while', 'switch', 'catch', 'function', 'const', 'let', 'var', 'class', 'return', 'console', 'require', 'import', 'export', 'new', 'this', 'typeof', 'instanceof', 'true', 'false', 'null', 'undefined', 'void', 'interface', 'type', 'enum', 'namespace', 'abstract', 'implements', 'extends', 'readonly', 'public', 'private', 'protected', 'static', 'async', 'await', 'number', 'string', 'boolean', 'any', 'never', 'unknown', 'infer', 'keyof', 'typeof', 'declare']),
+        typescript: new Set(['if', 'else', 'for', 'while', 'switch', 'catch', 'function', 'const', 'let', 'var', 'class', 'return', 'console', 'require', 'import', 'export', 'new', 'this', 'typeof', 'instanceof', 'true', 'false', 'null', 'undefined', 'void', 'interface', 'type', 'enum', 'namespace', 'abstract', 'implements', 'extends', 'readonly', 'public', 'private', 'protected', 'static', 'async', 'await', 'number', 'string', 'boolean', 'any', 'never', 'unknown', 'infer', 'keyof', 'declare', 'get', 'set', 'constructor', 'super', 'break', 'continue', 'do', 'try', 'finally', 'throw', 'case', 'default', 'yield', 'delete', 'with', 'debugger', 'as', 'from', 'of', 'in']),
         python: new Set(['if', 'else', 'elif', 'for', 'while', 'class', 'return', 'print', 'range', 'def', 'import', 'from', 'with', 'as', 'try', 'except', 'pass', 'and', 'or', 'not', 'in', 'is', 'True', 'False', 'None', 'lambda', 'yield', 'global', 'nonlocal', 'assert', 'break', 'continue', 'del', 'raise']),
         java: new Set(['if', 'else', 'for', 'while', 'switch', 'catch', 'new', 'return', 'class', 'throw', 'System', 'public', 'private', 'static', 'void', 'int', 'long', 'double', 'boolean', 'String', 'true', 'false', 'null']),
         c: new Set(['if', 'else', 'for', 'while', 'switch', 'return', 'printf', 'scanf', 'include', 'define', 'int', 'float', 'char', 'void', 'unsigned', 'long', 'short', 'struct', 'typedef', 'NULL']),
@@ -106,6 +106,32 @@ export class ParserService {
                 }
 
             } else if (lang === 'javascript' || lang === 'typescript') {
+                // Class/Interface method: public methodName(...) or methodName(...)
+                const methodMatch = trimmed.match(/^(?:(?:public|private|protected|static|async|readonly)\s+)*([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)/);
+                if (methodMatch && !trimmed.startsWith('function ') && !trimmed.startsWith('if') && !trimmed.startsWith('for') && !trimmed.startsWith('while') && !trimmed.startsWith('switch')) {
+                    const methodName = methodMatch[1];
+                    // Only add method name if it's not a keyword
+                    if (!excludeSet.has(methodName)) {
+                        addDef(methodName, lineNum, line);
+                    }
+                    // Parse parameters
+                    const parenIdx = line.indexOf('(', line.indexOf(methodName));
+                    const paramsStr = methodMatch[2] || '';
+                    let searchFrom = parenIdx + 1;
+                    if (paramsStr.trim()) {
+                        paramsStr.split(',').forEach(rawP => {
+                            const p = rawP.trim().split('=')[0].trim().split(':')[0].trim().replace(/^\.\.\./, '').replace(/[?]/g, '');
+                            if (p && !excludeSet.has(p)) {
+                                const col = line.indexOf(p, searchFrom);
+                                if (col !== -1) {
+                                    definitions.set(p, { name: p, line: lineNum, startCol: col, endCol: col + p.length });
+                                    searchFrom = col + p.length;
+                                }
+                            }
+                        });
+                    }
+                }
+
                 // Function declaration: function foo(a, b) or const foo = (a, b) => or const foo = async (a, b) =>
                 const fnDeclMatch = trimmed.match(/(?:function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*|(?:const|let|var)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(?:async\s*)?(?:function\s*)?\()\s*([^)]*)\)/);
                 if (fnDeclMatch) {
@@ -114,16 +140,18 @@ export class ParserService {
                     const parenIdx = line.indexOf('(');
                     const paramsStr = fnDeclMatch[3] || '';
                     let searchFrom = parenIdx + 1;
-                    paramsStr.split(',').forEach(rawP => {
-                        const p = rawP.trim().split('=')[0].trim().split(':')[0].trim().replace(/^\.\.\./, '');
-                        if (p) {
-                            const col = line.indexOf(p, searchFrom);
-                            if (col !== -1 && !excludeSet.has(p)) {
-                                definitions.set(p, { name: p, line: lineNum, startCol: col, endCol: col + p.length });
-                                searchFrom = col + p.length;
+                    if (paramsStr.trim()) {
+                        paramsStr.split(',').forEach(rawP => {
+                            const p = rawP.trim().split('=')[0].trim().split(':')[0].trim().replace(/^\.\.\./, '').replace(/[?]/g, '');
+                            if (p && !excludeSet.has(p)) {
+                                const col = line.indexOf(p, searchFrom);
+                                if (col !== -1) {
+                                    definitions.set(p, { name: p, line: lineNum, startCol: col, endCol: col + p.length });
+                                    searchFrom = col + p.length;
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
 
                 // TS: interface/type/enum/class declaration
@@ -133,6 +161,10 @@ export class ParserService {
                 // Variable declaration: const x = ..., let y, var z
                 const varMatch = trimmed.match(/^(?:const|let|var)\s+([a-zA-Z_][a-zA-Z0-9_]*)/);
                 if (varMatch) addDef(varMatch[1], lineNum, line);
+
+                // Class properties: private _view?: Type or public name: string
+                const propMatch = trimmed.match(/^(?:public|private|protected|readonly|static)\s+([a-zA-Z_][a-zA-Z0-9_]*)[?:]?\s*:/);
+                if (propMatch) addDef(propMatch[1], lineNum, line);
 
                 // For loop: for (let i = 0...) or for (const x of arr)
                 const forMatch = trimmed.match(/^for\s*\(\s*(?:let|const|var)?\s*([a-zA-Z_][a-zA-Z0-9_]*)/);

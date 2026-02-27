@@ -62,6 +62,50 @@ export function activate(context: vscode.ExtensionContext) {
 			await aiService.initialize(context);
 		}
 	});
+	context.subscriptions.push(resetAllKeys);
+
+	// Load API keys from .env file (Development helper)
+	let loadEnvKeys = vscode.commands.registerCommand('vertex.loadEnvKeys', async () => {
+		const fs = require('fs');
+		const path = require('path');
+		const envPath = path.join(__dirname, '..', '.vscode', '.env');
+		
+		try {
+			const envContent = fs.readFileSync(envPath, 'utf8');
+			const lines = envContent.split('\n');
+			
+			// Get the 3rd GEMINI_API_KEY
+			const geminiKeys = lines
+				.filter((line: string) => line.trim().startsWith('GEMINI_API_KEY='))
+				.map((line: string) => line.split('=')[1].trim());
+			
+			if (geminiKeys.length >= 3) {
+				await context.secrets.store('GEMINI_API_KEY', geminiKeys[2]);
+				vscode.window.showInformationMessage(`✅ Loaded 3rd Gemini key: ${geminiKeys[2].substring(0, 15)}...`);
+			}
+			
+			// Load OpenRouter key
+			const openRouterLine = lines.find((line: string) => line.trim().startsWith('OPENROUTER='));
+			if (openRouterLine) {
+				const key = openRouterLine.split('=')[1].trim();
+				await context.secrets.store('OPENROUTER_API_KEY', key);
+				vscode.window.showInformationMessage(`✅ Loaded OpenRouter key`);
+			}
+			
+			// Load Ollama key
+			const ollamaLine = lines.find((line: string) => line.trim().startsWith('OLLAMA_API_KEY='));
+			if (ollamaLine) {
+				const key = ollamaLine.split('=')[1].trim();
+				await context.secrets.store('OLLAMA_CLOUD_API_KEY', key);
+				vscode.window.showInformationMessage(`✅ Loaded Ollama key`);
+			}
+			
+			await aiService.syncModels();
+		} catch (error) {
+			vscode.window.showErrorMessage(`Failed to load .env file: ${error}`);
+		}
+	});
+	context.subscriptions.push(loadEnvKeys);
 
 	// Command to load a sample lesson
 	let loadLesson = vscode.commands.registerCommand('vertex.loadLesson', async () => {

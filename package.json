@@ -1,10 +1,15 @@
 {
-  "name": "vertex-vscode",
-  "displayName": "Vertex",
-  "description": "Vertex: The Visual Learning IDE for VS Code",
-  "version": "0.0.1",
+  "name": "vertex-devcode",
+  "displayName": "Vertex DevCode",
+  "description": "Vertex DevCode: The Visual Learning IDE with AI-Powered Insights",
+  "version": "1.1.0",
+  "publisher": "vertex-dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dev0root6/Vertex-code-IDE"
+  },
   "engines": {
-    "vscode": "^1.107.0"
+    "vscode": "^1.109.0"
   },
   "categories": [
     "Other"
@@ -24,8 +29,10 @@
         "command": "vertex.resetApiKey",
         "title": "Vertex: Reset Gemini API Key"
       },
-      {
-        "command": "vertex.loadLesson",
+      {        "command": "vertex.loadEnvKeys",
+        "title": "Vertex: Load API Keys from .env"
+      },
+      {        "command": "vertex.loadLesson",
         "title": "Vertex: Load Sample Lesson"
       },
       {
