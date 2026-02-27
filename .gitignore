@@ -3,3 +3,13 @@ dist
 node_modules
 .vscode-test/
 *.vsix
+.env
+.env.sample
+.env.local
+.vscode/.env
+.vscode/.env.local
+.vscode/.env.sample
+.vscode/.env.*.local
+.vscode/.env.*.sample
+.vsix*
+.vsix

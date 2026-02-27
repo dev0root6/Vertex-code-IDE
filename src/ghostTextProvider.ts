@@ -8,18 +8,19 @@ export class GhostTextProvider implements vscode.InlineCompletionItemProvider {
         context: vscode.InlineCompletionContext,
         token: vscode.CancellationToken
     ): Promise<vscode.InlineCompletionList | vscode.InlineCompletionItem[]> {
-        const slateService = TeacherSlateService.getInstance();
-        if (!slateService.isActive()) {
-            return [];
-        }
+        try {
+            const slateService = TeacherSlateService.getInstance();
+            if (!slateService.isActive()) {
+                return [];
+            }
 
-        const fullCode = slateService.getLessonCode();
-        if (!fullCode) {
-            return [];
-        }
+            const fullCode = slateService.getLessonCode();
+            if (!fullCode) {
+                return [];
+            }
 
-        // Get the entire document text and the full lesson/suggestion text
-        const docText = document.getText();
+            // Get the entire document text and the full lesson/suggestion text
+            const docText = document.getText();
 
         // Find where the cursor is in the absolute string
         const cursorOffset = document.offsetAt(position);
@@ -46,5 +47,10 @@ export class GhostTextProvider implements vscode.InlineCompletionItemProvider {
         }
 
         return [];
+        } catch (error) {
+            // Silently handle errors like DocumentMissingInHistoryContext
+            console.error('[Vertex] Ghost text provider error:', error);
+            return [];
+        }
     }
 }

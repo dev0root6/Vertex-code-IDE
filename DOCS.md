@@ -61,7 +61,7 @@ Initializes the AI service with the VS Code extension context.
 - **Parameters**: 
   - `context`: VS Code extension context for accessing secrets storage
 - **Returns**: `Promise<boolean>` - true if initialization succeeds
-- **Side Effects**: Loads API keys from secret storage, initializes configured AI providers
+- **Side Effects**: Loads API keys from secret storage, initializes configured AI Integration
 
 **Provider Management**
 
@@ -1107,8 +1107,8 @@ See [LICENSE](LICENSE) for license information.
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/vertex-vscode/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/vertex-vscode/discussions)
+- **Issues**: [GitHub Issues](https://github.com/dev0root6/Vertex-code-IDE//issues)
+- **Discussions**: [GitHub Discussions](https://github.com/dev0root6/Vertex-code-IDE//discussions)
 - **Email**: support@vertex-ide.com
 
 ---
