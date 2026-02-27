@@ -12,13 +12,12 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-brand">
-                <img src="vertex.svg" alt="Vertex Logo" style="width: 32px; height: 32px;">
-                <span>VeRTeX</span>
+                <img src="vertex.png" alt="Vertex Logo" class="nav-logo">
             </div>
             <ul class="nav-menu">
                 <li><a href="#features">Features</a></li>
                 <li><a href="#how-it-works">How It Works</a></li>
-                <li><a href="#providers">AI Providers</a></li>
+                <li><a href="#providers">AI Integration</a></li>
                 <li><a href="#documentation">Docs</a></li>
                 <li><a href="docs.html" class="btn-primary">Get Started</a></li>
             </ul>
@@ -60,7 +59,7 @@
                         </div>
                         <div class="stat">
                             <div class="stat-number">4</div>
-                            <div class="stat-label">AI Providers</div>
+                            <div class="stat-label">AI Integration</div>
                         </div>
                         <div class="stat">
                             <div class="stat-number">∞</div>
@@ -69,23 +68,32 @@
                     </div>
                 </div>
                 <div class="hero-image">
-                    <div class="code-window">
-                        <div class="window-header">
-                            <span class="dot red"></span>
-                            <span class="dot yellow"></span>
-                            <span class="dot green"></span>
-                        </div>
-                        <div class="code-content">
-                            <pre><code><span class="keyword">function</span> <span class="function">fibonacci</span>(<span class="param">n</span>) {
-  <span class="keyword">if</span> (n &lt;= <span class="number">1</span>) <span class="keyword">return</span> n;
-  <span class="keyword">return</span> <span class="function">fibonacci</span>(n - <span class="number">1</span>) + <span class="function">fibonacci</span>(n - <span class="number">2</span>);
+                    <div class="demo-container">
+                        <div class="code-window">
+                            <div class="window-header">
+                                <span class="dot red"></span>
+                                <span class="dot yellow"></span>
+                                <span class="dot green"></span>
+                            </div>
+                            <div class="code-content">
+                                <svg class="visualizer" id="code-visualizer"></svg>
+                                <pre class="ghost-layer"><code>function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
-<span class="keyword">const</span> result = <span class="function">fibonacci</span>(<span class="number">10</span>);
-<span class="ghost-text">// Type along to learn! 👻</span></code></pre>
-                        </div>
-                    </div>
-                </div>
+const result = fibonacci(10);</code></pre>
+                                <pre class="typed-layer" id="hero-code"><code></code></pre>
+                                <div class="typing-cursor"></div>
+                                
+                                <div class="sensei-popup">
+                                    <div class="sensei-icon">🧙</div>
+                                    <div class="sensei-content">
+                                        <strong>Sensei Insight</strong>
+                                        <p>This recursive function breaks down into smaller calls. Notice how fibonacci(n-1) and fibonacci(n-2) create a branching pattern.</p>
+                                    </div>
+                                </div>
+                            </div>
             </div>
         </div>
     </section>
@@ -165,7 +173,8 @@
                             (Gemini, OpenRouter, Ollama) and securely store your API key.
                         </p>
                         <div class="code-snippet">
-                            <code>ext install vertex-vscode</code>
+                            <!-- <code>ext install vertex-devcode</code> -->
+                            <code>Install it via github Version</code>
                         </div>
                     </div>
                 </div>
@@ -203,7 +212,7 @@
         </div>
     </section>
 
-    <!-- AI Providers Section -->
+    <!-- AI Integration Section -->
     <section id="providers" class="providers">
         <div class="container">
             <h2 class="section-title">Flexible AI Integration</h2>
@@ -211,8 +220,8 @@
             
             <div class="providers-grid">
                 <div class="provider-card">
-                    <div class="provider-logo">
-                        <i class="fas fa-google"></i>
+                    <div class="provider-logo gemini-logo">
+                        <img src="https://www.gstatic.com/lamda/images/gemini_sparkle_aurora_33f86dc0c0257da337c63.svg" alt="Gemini">
                     </div>
                     <h3>Google Gemini</h3>
                     <p class="provider-description">
@@ -231,8 +240,8 @@
                 </div>
 
                 <div class="provider-card">
-                    <div class="provider-logo">
-                        <i class="fas fa-network-wired"></i>
+                    <div class="provider-logo gemini-logo">
+                        <img src="https://openrouter.ai/icon-pwa.png" alt="Gemini">
                     </div>
                     <h3>OpenRouter</h3>
                     <p class="provider-description">
@@ -251,8 +260,8 @@
                 </div>
 
                 <div class="provider-card">
-                    <div class="provider-logo">
-                        <i class="fas fa-cloud"></i>
+                     <div class="provider-logo gemini-logo">
+                        <img src="https://ollama.com/public/ollama.png" alt="Gemini">
                     </div>
                     <h3>Ollama Cloud</h3>
                     <p class="provider-description">
@@ -345,10 +354,15 @@
             
             <div class="demo-container">
                 <div class="demo-video">
-                    <div class="video-placeholder">
-                        <i class="fas fa-play-circle"></i>
-                        <p>Demo Video Coming Soon</p>
-                    </div>
+                    <iframe 
+                        width="100%" 
+                        height="100%" 
+                        src="https://www.youtube.com/embed/a5DX5pQ9p5M?si=z3a_rUP-fa4aXIYt"
+                        title="Vertex Demo Video" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                    </iframe>
                 </div>
                 
                 <div class="demo-features">
@@ -378,6 +392,28 @@
         </div>
     </section>
 
+    <!-- Survey Section -->
+    <section id="survey" class="survey">
+        <div class="container">
+            <h2 class="section-title">Our Survey</h2>
+            <p class="section-subtitle">Help us improve Vertex by sharing your feedback</p>
+            
+            <div class="survey-container">
+                <div class="survey-video">
+                    <iframe 
+                        width="100%" 
+                        height="100%" 
+                        src="https://www.youtube.com/embed/a5DX5pQ9p5M?si=z3a_rUP-fa4aXIYt" 
+                        title="Vertex Survey" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Documentation Preview -->
     <section id="documentation" class="documentation">
         <div class="container">
@@ -399,7 +435,7 @@
                         <i class="fas fa-cog"></i>
                     </div>
                     <h3>Configuration</h3>
-                    <p>Set up AI providers, models, and preferences</p>
+                    <p>Set up AI Integration, models, and preferences</p>
                     <span class="doc-link">Read more →</span>
                 </a>
 
@@ -434,7 +470,7 @@
                     <a href="docs.html" class="btn btn-primary btn-lg">
                         <i class="fas fa-download"></i> Install Now
                     </a>
-                    <a href="https://github.com/yourusername/vertex-vscode" class="btn btn-secondary btn-lg">
+                    <a href="https://github.com/dev0root6/Vertex-code-IDE/" class="btn btn-secondary btn-lg">
                         <i class="fab fa-github"></i> View on GitHub
                     </a>
                 </div>
@@ -447,13 +483,13 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3><img src="vertex.svg" alt="Vertex" style="width: 24px; height: 24px; vertical-align: middle;"> VeRTeX</h3>
+                    <h3><img src="vertex.png" alt="Vertex" class="nav-logo"></h3>
                     <p>The Visual Learning IDE for VS Code</p>
                     <p style="font-size: 0.875rem; color: var(--text-muted); font-style: italic;">Trace With Code, Master The Logic</p>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-github"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-discord"></i></a>
+                        <a href="https://github.com/dev0root6/"><i class="fab fa-github"></i></a>
+                        <a href="https://youtube.com/@dev0root"><i class="fab fa-youtube"></i></a>
+                        <a href="https://linkedin.com/in/dev0root"><i class="fab fa-linkedin"></i></a>
                     </div>
                 </div>
 
@@ -461,7 +497,7 @@
                     <h4>Product</h4>
                     <ul>
                         <li><a href="#features">Features</a></li>
-                        <li><a href="#providers">AI Providers</a></li>
+                        <li><a href="#providers">AI Integration</a></li>
                         <li><a href="docs.html">Documentation</a></li>
                         <li><a href="#">Changelog</a></li>
                     </ul>
@@ -480,10 +516,10 @@
                 <div class="footer-section">
                     <h4>Community</h4>
                     <ul>
-                        <li><a href="#">GitHub</a></li>
-                        <li><a href="#">Discord</a></li>
-                        <li><a href="#">Twitter</a></li>
-                        <li><a href="#">Blog</a></li>
+                        <li><a href="https://github.com/dev0root6/Vertex-code-IDE/">GitHub</a></li>
+                        <li><a href="https://instagram.com/dev0root.in">Instagram</a></li>
+                        <li><a href="https://youtube.com/@dev0root">Youtube</a></li>
+                        <li><a href="https://linkedin.com/in/dev0root">LinkedIn</a></li>
                     </ul>
                 </div>
             </div>

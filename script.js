@@ -53,26 +53,110 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Typing animation for hero code
-    const codeElement = document.querySelector('.code-content code');
-    if (codeElement) {
-        const originalText = codeElement.innerHTML;
-        let index = 0;
+    const heroCode = document.getElementById('hero-code');
+    const visualizer = document.getElementById('code-visualizer');
+    
+    if (heroCode && visualizer) {
+        const codeText = `function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+const result = fibonacci(10);`;
         
-        function typeWriter() {
-            if (index < originalText.length) {
-                codeElement.innerHTML = originalText.substring(0, index + 1);
-                index++;
-                setTimeout(typeWriter, 50);
+        const codeElement = heroCode.querySelector('code');
+        let charIndex = 0;
+        
+        function typeCharacter() {
+            if (charIndex < codeText.length) {
+                const char = codeText[charIndex];
+                codeElement.textContent += char;
+                charIndex++;
+                
+                // Variable speed - faster for spaces, slower for other chars
+                const speed = char === ' ' ? 30 : (char === '\n' ? 10 : 60);
+                setTimeout(typeCharacter, speed);
             } else {
-                codeElement.innerHTML = originalText; // Restore full formatted text
+                // Apply syntax highlighting after typing is done
+                setTimeout(() => {
+                    codeElement.innerHTML = `<span class="keyword">function</span> <span class="function fib-call" data-index="0">fibonacci</span>(<span class="param">n</span>) {
+  <span class="keyword">if</span> (n &lt;= <span class="number">1</span>) <span class="keyword">return</span> n;
+  <span class="keyword">return</span> <span class="function fib-call" data-index="1">fibonacci</span>(n - <span class="number">1</span>) + <span class="function fib-call" data-index="2">fibonacci</span>(n - <span class="number">2</span>);
+}
+
+<span class="keyword">const</span> result = <span class="function fib-call" data-index="3">fibonacci</span>(<span class="number">10</span>);`;
+                    
+                    // Wait a bit then draw connections
+                    setTimeout(drawConnections, 500);
+                }, 500);
             }
         }
         
-        // Start typing animation after a delay
-        setTimeout(() => {
-            codeElement.innerHTML = '';
-            typeWriter();
-        }, 1000);
+        function drawConnections() {
+            const fibCalls = codeElement.querySelectorAll('.fib-call');
+            if (fibCalls.length === 0) return;
+            
+            // Get positions of all fibonacci calls
+            const positions = Array.from(fibCalls).map((el, idx) => {
+                const rect = el.getBoundingClientRect();
+                const containerRect = heroCode.getBoundingClientRect();
+                return {
+                    x: rect.left - containerRect.left + rect.width / 2,
+                    y: rect.top - containerRect.top + rect.height / 2 + (idx === 10 ? 40 : 40), // Bring down first node beneath the word
+                    index: el.dataset.index
+                };
+            });
+            
+            // Draw lines connecting function definition to calls
+            const svg = visualizer;
+            svg.setAttribute('width', '100%');
+            svg.setAttribute('height', '100%');
+            
+            let lineDelay = 0;
+            // Connect definition (0) to first call (1)
+            if (positions[0] && positions[1]) {
+                createLine(svg, positions[0], positions[1], lineDelay);
+                createNode(svg, positions[1], lineDelay + 300);
+                lineDelay += 600;
+            }
+            
+            // Connect first call (1) to second call (2)
+            if (positions[1] && positions[2]) {
+                createLine(svg, positions[1], positions[2], lineDelay);
+                createNode(svg, positions[2], lineDelay + 300);
+                lineDelay += 600;
+            }
+            
+            // Connect to last call (3)
+            if (positions[2] && positions[3]) {
+                createLine(svg, positions[2], positions[3], lineDelay);
+                createNode(svg, positions[3], lineDelay + 300);
+            }
+        }
+        
+        function createLine(svg, start, end, delay) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', start.x);
+            line.setAttribute('y1', start.y);
+            line.setAttribute('x2', end.x);
+            line.setAttribute('y2', end.y);
+            line.setAttribute('class', 'viz-line');
+            line.style.animationDelay = `${delay}ms`;
+            svg.appendChild(line);
+        }
+        
+        function createNode(svg, pos, delay) {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', pos.x);
+            circle.setAttribute('cy', pos.y);
+            circle.setAttribute('r', '5');
+            circle.setAttribute('class', 'viz-node');
+            circle.style.animationDelay = `${delay}ms`;
+            svg.appendChild(circle);
+        }
+        
+        // Start typing after a delay
+        setTimeout(typeCharacter, 1000);
     }
     
     // Navbar background on scroll
@@ -261,4 +345,4 @@ window.addEventListener('beforeunload', () => {
 // Console message for developers
 console.log('%c🌌 Vertex - The Visual Learning IDE', 'font-size: 20px; font-weight: bold; color: #6366f1;');
 console.log('%cInterested in contributing? Check out our GitHub!', 'font-size: 14px; color: #94a3b8;');
-console.log('%chttps://github.com/yourusername/vertex-vscode', 'font-size: 12px; color: #8b5cf6;');
+console.log('%chttps://github.com/dev0root6/Vertex-code-IDE/', 'font-size: 12px; color: #8b5cf6;');
