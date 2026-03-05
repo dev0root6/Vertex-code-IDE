@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { TeacherSlateService } from './teacherSlate';
+import { LearningProfileService } from './learning/learningProfile';
 
 export class GhostTextProvider implements vscode.InlineCompletionItemProvider {
     public async provideInlineCompletionItems(
@@ -9,6 +10,15 @@ export class GhostTextProvider implements vscode.InlineCompletionItemProvider {
         token: vscode.CancellationToken
     ): Promise<vscode.InlineCompletionList | vscode.InlineCompletionItem[]> {
         try {
+            // Check user level - ghost text only for beginners
+            const profileService = LearningProfileService.getInstance();
+            const profile = profileService.getProfile();
+            
+            if (profile.level !== 'beginner') {
+                // Only beginners get ghost text
+                return [];
+            }
+            
             const slateService = TeacherSlateService.getInstance();
             if (!slateService.isActive()) {
                 return [];
@@ -27,7 +37,7 @@ export class GhostTextProvider implements vscode.InlineCompletionItemProvider {
 
         // We want to show the remainder of the fullCode starting from where the user is
         // However, we need to handle if the user is typing "ahead" or in the middle.
-        // For Vertex, we assume the user is typing sequentially from the start.
+        // For DevX, we assume the user is typing sequentially from the start.
 
         const ghostText = fullCode.substring(cursorOffset);
 
@@ -49,7 +59,7 @@ export class GhostTextProvider implements vscode.InlineCompletionItemProvider {
         return [];
         } catch (error) {
             // Silently handle errors like DocumentMissingInHistoryContext
-            console.error('[Vertex] Ghost text provider error:', error);
+            console.error('[DevX] Ghost text provider error:', error);
             return [];
         }
     }

@@ -1,6 +1,6 @@
-# 🌌 Vertex - The Visual Learning Extension for VS Code
+# 🌌 DevX Code IDE - The Visual Learning Extension for VS Code
 
-**Vertex** is a next-generation educational extension for VS Code that transforms your editor into a mentor. It combines ghost-text guidance, visual call graphs, and motivational AI to help you master coding character-by-character.
+**DevX Code IDE** is a next-generation educational extension for VS Code that transforms your editor into a mentor. It combines ghost-text guidance, visual call graphs, and motivational AI to help you master coding character-by-character.
 
 ## ✨ Key Features
 
@@ -42,13 +42,13 @@
   - **OpenRouter API Key**
   - **Ollama Cloud API Key**
   - **Local Ollama** (no API key needed)
-- Vertex will securely prompt you for API keys on first use and store them in VS Code's Secret Storage.
+- DevX will securely prompt you for API keys on first use and store them in VS Code's Secret Storage.
 
 ### 2. Loading a Lesson
-Run the command `Vertex: Load Sample Lesson` from the Command Palette (`Ctrl+Shift+P`).
+Run the command `DevX: Load Sample Lesson` from the Command Palette (`Ctrl+Shift+P`).
 
 ### 3. Visualizing Relationships
-Run the command `Vertex: Show Visual Intelligence` to open the side-by-side visualizer.
+Run the command `DevX: Show Visual Intelligence` to open the side-by-side visualizer.
 
 ---
 
@@ -57,27 +57,27 @@ Run the command `Vertex: Show Visual Intelligence` to open the side-by-side visu
 ### AI Provider Settings
 | Setting | Description | Default |
 |---------|-------------|---------|
-| `vertex.aiProvider` | Global fallback AI provider | `Gemini` |
-| `vertex.senseiProvider` | AI provider for Sensei feedback | `Gemini` |
-| `vertex.codeGenProvider` | AI provider for code generation | `Gemini` |
-| `vertex.senseiModel` | Model used by Sensei | `gemini-2.0-flash` |
-| `vertex.codeGenModel` | Model used for code generation | `gemini-2.0-flash` |
+| `devx.aiProvider` | Global fallback AI provider | `Gemini` |
+| `devx.senseiProvider` | AI provider for Sensei feedback | `Gemini` |
+| `devx.codeGenProvider` | AI provider for code generation | `Gemini` |
+| `devx.senseiModel` | Model used by Sensei | `gemini-2.0-flash` |
+| `devx.codeGenModel` | Model used for code generation | `gemini-2.0-flash` |
 ### Learning Commands
-- `Vertex: Load Sample Lesson` – Start a guided coding lesson with ghost text.
-- `Vertex: Clear Lesson` – Clear all decorations and active lessons.
-- `Vertex: Run Current Code` – Execute the current file.
+- `DevX: Load Sample Lesson` – Start a guided coding lesson with ghost text.
+- `DevX: Clear Lesson` – Clear all decorations and active lessons.
+- `DevX: Run Current Code` – Execute the current file.
 
 ### Visualization Commands
-- `Vertex: Show Visual Intelligence` – Open the visual intelligence sidebar.
-- `Vertex: Toggle Visual Intelligence` – Toggle the visualizer on/off (`Ctrl+Shift+V` / `Cmd+Shift+V`).
+- `DevX: Show Visual Intelligence` – Open the visual intelligence sidebar.
+- `DevX: Toggle Visual Intelligence` – Toggle the visualizer on/off (`Ctrl+Shift+V` / `Cmd+Shift+V`).
 
 ### AI Configuration Commands
-- `Vertex: Select Gemini Model` – Choose which Gemini model to use (`Ctrl+J` / `Cmd+J`).
-- `Vertex: Ask Sensei for Code` – Get AI-powered code suggestions (`Ctrl+I` / `Cmd+I`).
-- `Vertex: Reset Gemini API Key` – Clear and re-enter your Gemini API key.
-- `Vertex: Reset OpenRouter API Key` – Clear and re-enter your OpenRouter API key.
-- `Vertex: Reset Ollama Cloud API Key` – Clear and re-enter your Ollama Cloud API key.
-- `Vertex: Reset ALL API Keys` – Clear all stored API keys at once.
+- `DevX: Select Gemini Model` – Choose which Gemini model to use (`Ctrl+J` / `Cmd+J`).
+- `DevX: Ask Sensei for Code` – Get AI-powered code suggestions (`Ctrl+I` / `Cmd+I`).
+- `DevX: Reset Gemini API Key` – Clear and re-enter your Gemini API key.
+- `DevX: Reset OpenRouter API Key` – Clear and re-enter your OpenRouter API key.
+- `DevX: Reset Ollama Cloud API Key` – Clear and re-enter your Ollama Cloud API key.
+- `DevX: Reset ALL API Keys` – Clear all stored API keys at once.
 
 ### Keyboard Shortcuts
 - `Ctrl+I` / `Cmd+I` – Ask Sensei for code suggestions
@@ -87,9 +87,9 @@ Run the command `Vertex: Show Visual Intelligence` to open the side-by-side visu
 
 ---
 
-## 🎓 What Makes Vertex Unique?
+## 🎓 What Makes DevX Code IDE Unique?
 
-Vertex combines three powerful learning paradigms:
+DevX Code IDE combines three powerful learning paradigms:
 
 1. **Interactive Learning** - Type along with ghost text guidance, getting instant feedback on every character you type.
 
@@ -101,7 +101,7 @@ Vertex combines three powerful learning paradigms:
 
 - **Secure Storage**: All API keys are encrypted and stored in VS Code's Secret Storage
 - **Local Option**: Use Local Ollama for complete privacy - your code never leaves your machine
-- **No Telemetry**: Vertex doesn't collect or send any usage data
+- **No Telemetry**: DevX doesn't collect or send any usage data
 - **Open Source**: Review the code and contribute on GitHub
 
 ## 🌍 Supported Languages
@@ -132,10 +132,10 @@ For comprehensive API documentation and advanced usage, see [DOCS.md](DOCS.md).
 
 ## 🤝 Commands
 
-- `Vertex: Load Sample Lesson` – Start a guided coding lesson.
-- `Vertex: Clear Lesson` – Clear all decorations and active lessons.
-- `Vertex: Show Visual Intelligence` – Toggle the SVG relationship visualizer.
-- `Vertex: Reset Gemini API Key` – Clear your stored key to provide a new one.
+- `DevX: Load Sample Lesson` – Start a guided coding lesson.
+- `DevX: Clear Lesson` – Clear all decorations and active lessons.
+- `DevX: Show Visual Intelligence` – Toggle the SVG relationship visualizer.
+- `DevX: Reset Gemini API Key` – Clear your stored key to provide a new one.
 
 ---
 *Built with ❤️ for the next generation of developers.*
