@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { LearningProfileService } from './learning/learningProfile';
 
 export class TeacherSlateService {
     private static instance: TeacherSlateService;
@@ -43,6 +44,17 @@ export class TeacherSlateService {
     }
 
     public setLesson(code: string) {
+        // Check if user level allows lessons (beginners only)
+        const profileService = LearningProfileService.getInstance();
+        const profile = profileService.getProfile();
+        
+        if (profile.level !== 'beginner') {
+            vscode.window.showInformationMessage(
+                `Lessons are only available for Beginner level. You're at ${profile.level} level.`
+            );
+            return;
+        }
+        
         this.currentLesson = code;
         this.active = true;
         this.updateDecorations();
@@ -144,6 +156,17 @@ export class TeacherSlateService {
     }
 
     public setSuggestedCode(code: string) {
+        // Check if user level allows AI suggestions
+        const profileService = LearningProfileService.getInstance();
+        const profile = profileService.getProfile();
+        
+        if (profile.level !== 'beginner') {
+            // Only beginners get ghost text suggestions
+            // Intermediate gets text hints, Pro gets nothing
+            this.suggestedCode = '';
+            return;
+        }
+        
         this.suggestedCode = code;
         this.updateDecorations();
     }

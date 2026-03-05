@@ -34,14 +34,14 @@ jobs:
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
-        files: vertex-devcode-*.vsix
+        files: devx-devcode-*.vsix
         body: |
           ## Vertex DevCode ${{ github.ref_name }}
           
           ### Installation
-          Download `vertex-devcode-${{ steps.get_version.outputs.VERSION }}.vsix` and install:
+          Download `devx-devcode-${{ steps.get_version.outputs.VERSION }}.vsix` and install:
           ```bash
-          code --install-extension vertex-devcode-${{ steps.get_version.outputs.VERSION }}.vsix
+          code --install-extension devx-devcode-${{ steps.get_version.outputs.VERSION }}.vsix
           ```
           
           ### Changes

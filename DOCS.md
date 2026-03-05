@@ -1,18 +1,20 @@
-# 📚 Vertex Extension - Complete API Documentation
+# 📚 DevX Code IDE - Complete Documentation
 
 ## Table of Contents
 1. [Architecture Overview](#architecture-overview)
-2. [Core Services](#core-services)
-3. [API Reference](#api-reference)
-4. [Extension Points](#extension-points)
-5. [Configuration API](#configuration-api)
-6. [Usage Examples](#usage-examples)
+2. [Adaptive Learning System](#adaptive-learning-system)
+3. [Core Services](#core-services)
+4. [Learning Services API](#learning-services-api)
+5. [Commands Reference](#commands-reference)
+6. [Configuration API](#configuration-api)
+7. [Usage Examples](#usage-examples)
+8. [Extension Points](#extension-points)
 
 ---
 
 ## Architecture Overview
 
-Vertex is built on a modular architecture with five core services:
+DevX Code IDE is built on a modular architecture with core AI services and an adaptive learning system:
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -20,22 +22,87 @@ Vertex is built on a modular architecture with five core services:
 │         (Main Activation & Commands)             │
 └──────────────┬──────────────────────────────────┘
                │
-       ┌───────┴──────┬──────────┬────────────┐
-       │              │          │            │
-   ┌───▼───┐    ┌────▼────┐ ┌───▼────┐  ┌───▼────────┐
-   │ AI    │    │Teacher  │ │Visual  │  │Ghost Text  │
-   │Service│    │ Slate   │ │izer    │  │Provider    │
-   └───┬───┘    └────┬────┘ └───┬────┘  └────────────┘
-       │             │          │
-       │             │      ┌───▼──────┐
-       │             │      │ Parser   │
-       │             │      │ Service  │
-       │             │      └──────────┘
-       ▼             ▼
+       ┌───────┴──────┬──────────┬────────────┬──────────────┐
+       │              │          │            │              │
+   ┌───▼───┐    ┌────▼────┐ ┌───▼────┐  ┌───▼────────┐ ┌──▼────────┐
+   │ AI    │    │Teacher  │ │Visual  │  │Ghost Text  │ │ Learning  │
+   │Service│    │ Slate   │ │izer    │  │Provider    │ │ System    │
+   └───┬───┘    └────┬────┘ └───┬────┘  └────────────┘ └─────┬─────┘
+       │             │          │                             │
+       │             │      ┌───▼──────┐               ┌─────▼──────┐
+       │             │      │ Parser   │               │  Profile   │
+       │             │      │ Service  │               │  Activity  │
+       │             │      └──────────┘               │  Adapter   │
+       ▼             ▼                                 └────────────┘
   [Gemini API]   [Decorations]
   [OpenRouter]   [Webview]
   [Ollama]
 ```
+
+---
+
+## Adaptive Learning System
+
+### Overview
+
+DevX Code IDE includes a sophisticated adaptive learning system that personalizes the coding experience based on student behavior, performance, and skill level.
+
+### Learning Levels
+
+The system supports three learning levels:
+
+#### 🌱 Beginner
+- **Full Ghost Text**: Complete code suggestions appear as you type
+- **Enhanced Guidance**: Step-by-step instructions and syntax help
+- **Idle Detection**: 15 seconds - Quick assistance when stuck
+- **Target Audience**: New programmers learning syntax and basics
+
+#### 🌿 Intermediate  
+- **Comment Hints**: Strategic comments guide implementation without revealing code
+- **Logic Guidance**: Focus on understanding algorithmic approaches
+- **Idle Detection**: 30 seconds - Balanced autonomy and support
+- **Target Audience**: Students comfortable with syntax, building problem-solving skills
+
+#### 🌳 Pro
+- **Independent Coding**: Minimal interference, architecture-level guidance only
+- **Sensei Insights**: High-level design patterns and best practices
+- **Idle Detection**: 120 seconds - Maximum thinking time before intervention
+- **Target Audience**: Advanced students ready for real-world development
+
+### Performance Tracking
+
+The system continuously monitors:
+
+1. **Typing Speed**: Words per minute (WPM) calculated from keystroke timing
+2. **Error Rate**: Percentage of syntax errors and corrections
+3. **Completion Time**: Average time to complete code blocks
+4. **Performance Score**: 0-100 composite score based on all metrics
+5. **Session Statistics**: Blocks completed, hints used, total keystrokes
+
+### Auto-Adaptation
+
+The level adapter automatically suggests transitions:
+- **Level Up**: When performance score ≥ 85 consistently
+- **Level Down**: When performance score ≤ 40 (struggling)
+- **User Control**: Manual level selection always available
+
+### Behavioral Analysis
+
+#### Idle Detection
+Monitors coding inactivity and offers contextual help:
+- Tracks time since last keystroke
+- Level-specific thresholds prevent premature interruption
+- Non-intrusive notifications with actionable options
+
+#### Stuck Detection  
+Identifies when a student is struggling on a specific line:
+- Tracks time spent on same line with errors
+- 30-second threshold (all levels)
+- Suggests logic-focused guidance (not syntax correction)
+
+---
+
+## Core Services
 
 ---
 
@@ -128,11 +195,11 @@ const code = await aiService.generateCode(
 **Configuration**
 
 The AIService reads from VS Code settings:
-- `vertex.senseiProvider` - Provider for motivational feedback
-- `vertex.codeGenProvider` - Provider for code generation
-- `vertex.senseiModel` - Model name for Sensei
-- `vertex.codeGenModel` - Model name for code generation
-- `vertex.ollamaEndpoint` - Endpoint for local Ollama (default: http://localhost:11434)
+- `devx.senseiProvider` - Provider for motivational feedback
+- `devx.codeGenProvider` - Provider for code generation
+- `devx.senseiModel` - Model name for Sensei
+- `devx.codeGenModel` - Model name for code generation
+- `devx.ollamaEndpoint` - Endpoint for local Ollama (default: http://localhost:11434)
 
 ---
 
@@ -241,7 +308,7 @@ Provides a webview-based visual intelligence panel showing code relationships.
 **Constants**
 
 ```typescript
-public static readonly viewType = 'vertex.visualizer'
+public static readonly viewType = 'devx.visualizer'
 ```
 
 **Constructor**
@@ -519,14 +586,14 @@ All commands are registered in `extension.ts` and accessible via Command Palette
 #### Learning Commands
 
 ```typescript
-'vertex.loadLesson'
+'devx.loadLesson'
 ```
 Loads a language-specific sample lesson.
 - **Keyboard**: None (use Command Palette)
 - **Effect**: Activates TeacherSlateService with sample code
 
 ```typescript
-'vertex.clearLesson'
+'devx.clearLesson'
 ```
 Clears the current lesson and deactivates learning mode.
 - **Keyboard**: None
@@ -535,7 +602,7 @@ Clears the current lesson and deactivates learning mode.
 #### AI Commands
 
 ```typescript
-'vertex.askSensei'
+'devx.askSensei'
 ```
 Requests code suggestions from AI.
 - **Keyboard**: `Ctrl+I` (Windows/Linux), `Cmd+I` (Mac)
@@ -543,7 +610,7 @@ Requests code suggestions from AI.
 - **Effect**: Opens input box, generates code via AIService
 
 ```typescript
-'vertex.selectModel'
+'devx.selectModel'
 ```
 Opens model selection quick pick.
 - **Keyboard**: `Ctrl+J` (Windows/Linux), `Cmd+J` (Mac)
@@ -551,7 +618,7 @@ Opens model selection quick pick.
 - **Effect**: Shows available models, updates configuration
 
 ```typescript
-'vertex.changeProvider'
+'devx.changeProvider'
 ```
 Switches AI provider.
 - **Keyboard**: `Ctrl+H` (Windows/Linux), `Cmd+H` (Mac)
@@ -561,14 +628,14 @@ Switches AI provider.
 #### Visualization Commands
 
 ```typescript
-'vertex.showVisualizer'
+'devx.showVisualizer'
 ```
 Opens the Visual Intelligence sidebar.
 - **Keyboard**: None
 - **Effect**: Reveals visualizer webview
 
 ```typescript
-'vertex.toggleVisualizer'
+'devx.toggleVisualizer'
 ```
 Toggles visualizer visibility.
 - **Keyboard**: `Ctrl+Shift+V` (Windows/Linux), `Cmd+Shift+V` (Mac)
@@ -577,22 +644,22 @@ Toggles visualizer visibility.
 #### API Key Management
 
 ```typescript
-'vertex.resetGeminiKey'
+'devx.resetGeminiKey'
 ```
 Clears stored Gemini API key.
 
 ```typescript
-'vertex.resetOpenRouterKey'
+'devx.resetOpenRouterKey'
 ```
 Clears stored OpenRouter API key.
 
 ```typescript
-'vertex.resetOllamaKey'
+'devx.resetOllamaKey'
 ```
 Clears stored Ollama Cloud API key.
 
 ```typescript
-'vertex.resetAllKeys'
+'devx.resetAllKeys'
 ```
 Clears all stored API keys with confirmation prompt.
 
@@ -602,8 +669,8 @@ Clears all stored API keys with confirmation prompt.
 
 ```json
 {
-  "id": "vertex-explorer",
-  "title": "Vertex",
+  "id": "devx-explorer",
+  "title": "DevX",
   "icon": "$(eye)"
 }
 ```
@@ -613,7 +680,7 @@ Clears all stored API keys with confirmation prompt.
 ```json
 {
   "type": "webview",
-  "id": "vertex.visualizer",
+  "id": "devx.visualizer",
   "name": "Visual Intelligence"
 }
 ```
@@ -624,37 +691,37 @@ Clears all stored API keys with confirmation prompt.
 
 ### Settings Schema
 
-All settings are under the `vertex` namespace.
+All settings are under the `devx` namespace.
 
-#### `vertex.aiProvider`
+#### `devx.aiProvider`
 - **Type**: `string`
 - **Default**: `"Gemini"`
 - **Enum**: `["Local Model (Ollama)", "Ollama Cloud", "OpenRouter", "Gemini"]`
 - **Description**: Global fallback provider if service-specific providers are not set
 
-#### `vertex.senseiProvider`
+#### `devx.senseiProvider`
 - **Type**: `string`
 - **Default**: `"Gemini"`
 - **Enum**: `["Local Model (Ollama)", "Ollama Cloud", "OpenRouter", "Gemini"]`
 - **Description**: Provider specifically for Sensei's motivational feedback
 
-#### `vertex.codeGenProvider`
+#### `devx.codeGenProvider`
 - **Type**: `string`
 - **Default**: `"Gemini"`
 - **Enum**: `["Local Model (Ollama)", "Ollama Cloud", "OpenRouter", "Gemini"]`
 - **Description**: Provider for code generation requests
 
-#### `vertex.senseiModel`
+#### `devx.senseiModel`
 - **Type**: `string`
 - **Default**: `"gemini-2.0-flash"`
 - **Description**: Model used by Sensei for mentoring
 
-#### `vertex.codeGenModel`
+#### `devx.codeGenModel`
 - **Type**: `string`
 - **Default**: `"gemini-2.0-flash"`
 - **Description**: Model used for code generation
 
-#### `vertex.ollamaEndpoint`
+#### `devx.ollamaEndpoint`
 - **Type**: `string`
 - **Default**: `"http://localhost:11434"`
 - **Description**: Endpoint URL for local Ollama instance
@@ -662,7 +729,7 @@ All settings are under the `vertex` namespace.
 ### Accessing Settings
 
 ```typescript
-const config = vscode.workspace.getConfiguration('vertex');
+const config = vscode.workspace.getConfiguration('devx');
 const provider = config.get<string>('senseiProvider');
 const model = config.get<string>('senseiModel');
 
@@ -770,7 +837,7 @@ if (editor) {
 import * as vscode from 'vscode';
 
 // Configure different providers for different tasks
-const config = vscode.workspace.getConfiguration('vertex');
+const config = vscode.workspace.getConfiguration('devx');
 
 // Use fast model for Sensei feedback
 await config.update('senseiProvider', 'Gemini', vscode.ConfigurationTarget.Global);
@@ -845,12 +912,12 @@ vscode.window.onDidChangeTextEditorSelection(event => {
 
 ```typescript
 vscode.workspace.onDidChangeConfiguration(event => {
-  if (event.affectsConfiguration('vertex')) {
+  if (event.affectsConfiguration('devx')) {
     // Resync AI models
     aiService.syncModels();
     
     // Update UI
-    vscode.window.showInformationMessage('Vertex configuration updated');
+    vscode.window.showInformationMessage('DevX configuration updated');
   }
 });
 ```
@@ -1004,7 +1071,7 @@ webviewView.webview.options = {
 **Issue**: Ghost text not appearing
 - **Check**: Is learning mode active? (`TeacherSlateService.isActive()`)
 - **Check**: Is inline completion enabled in VS Code settings?
-- **Solution**: Run `Vertex: Load Sample Lesson`
+- **Solution**: Run `DevX: Load Sample Lesson`
 
 **Issue**: Visualizer not updating
 - **Check**: Is the webview visible?
@@ -1015,7 +1082,7 @@ webviewView.webview.options = {
 - **Check**: Is API key configured?
 - **Check**: Network connectivity
 - **Check**: Rate limits
-- **Solution**: Run `Vertex: Reset API Keys`
+- **Solution**: Run `DevX: Reset API Keys`
 
 **Issue**: Incorrect relationships in visualizer
 - **Check**: Is language supported?
@@ -1059,7 +1126,7 @@ if (lang === 'rust') {
 ```typescript
 // 1. Add provider to configuration enum in package.json
 {
-  "vertex.aiProvider": {
+  "devx.aiProvider": {
     "enum": ["Local Model (Ollama)", "Ollama Cloud", "OpenRouter", "Gemini", "Anthropic"]
   }
 }
@@ -1068,7 +1135,7 @@ if (lang === 'rust') {
 private anthropicClient: any;
 
 public async syncModels(): Promise<void> {
-  const config = vscode.workspace.getConfiguration('vertex');
+  const config = vscode.workspace.getConfiguration('devx');
   const provider = config.get<string>('senseiProvider');
   
   if (provider === 'Anthropic') {
@@ -1086,7 +1153,7 @@ private async initAnthropic(): Promise<void> {
 
 // 3. Add API calls
 public async generateSenseiResponse(code: string, context: string): Promise<string> {
-  const provider = vscode.workspace.getConfiguration('vertex').get<string>('senseiProvider');
+  const provider = vscode.workspace.getConfiguration('devx').get<string>('senseiProvider');
   
   if (provider === 'Anthropic') {
     return await this.callAnthropic(code, context);
@@ -1107,12 +1174,12 @@ See [LICENSE](LICENSE) for license information.
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/dev0root6/Vertex-code-IDE//issues)
-- **Discussions**: [GitHub Discussions](https://github.com/dev0root6/Vertex-code-IDE//discussions)
-- **Email**: support@vertex-ide.com
+- **Issues**: [GitHub Issues](https://github.com/dev0root6/DevX-code-IDE//issues)
+- **Discussions**: [GitHub Discussions](https://github.com/dev0root6/DevX-code-IDE//discussions)
+- **Email**: support@devx-ide.com
 
 ---
 
 **Last Updated**: February 26, 2026  
 **Version**: 0.0.1  
-**Maintainer**: Vertex Team
+**Maintainer**: DevX Team

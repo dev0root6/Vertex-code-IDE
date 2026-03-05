@@ -1,15 +1,16 @@
 {
-  "name": "vertex-devcode",
-  "displayName": "Vertex DevCode",
-  "description": "Vertex DevCode: The Visual Learning IDE with AI-Powered Insights",
+  "name": "devx-devcode",
+  "displayName": "DevX Code IDE",
+  "description": "DevX Code IDE: The Visual Learning IDE with AI-Powered Insights",
   "version": "1.1.0",
-  "publisher": "vertex-dev",
+  "publisher": "devx-dev",
+  "icon": "DX-logo.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dev0root6/Vertex-code-IDE"
+    "url": "https://github.com/dev0root6/DevX-code-IDE"
   },
   "engines": {
-    "vscode": "^1.109.0"
+    "vscode": "^1.95.0"
   },
   "categories": [
     "Other"
@@ -26,110 +27,191 @@
   "contributes": {
     "commands": [
       {
-        "command": "vertex.resetApiKey",
-        "title": "Vertex: Reset Gemini API Key"
-      },
-      {        "command": "vertex.loadEnvKeys",
-        "title": "Vertex: Load API Keys from .env"
-      },
-      {        "command": "vertex.loadLesson",
-        "title": "Vertex: Load Sample Lesson"
+        "command": "devx.resetApiKey",
+        "title": "DevX: Reset Gemini API Key"
       },
       {
-        "command": "vertex.clearLesson",
-        "title": "Vertex: Clear Lesson"
+        "command": "devx.loadEnvKeys",
+        "title": "DevX: Load API Keys from .env"
       },
       {
-        "command": "vertex.showVisualizer",
-        "title": "Vertex: Show Visual Intelligence"
+        "command": "devx.loadLesson",
+        "title": "DevX: Load Sample Lesson"
       },
       {
-        "command": "vertex.runCode",
-        "title": "Vertex: Run Current Code"
+        "command": "devx.clearLesson",
+        "title": "DevX: Clear Lesson"
       },
       {
-        "command": "vertex.askSensei",
-        "title": "Vertex: Ask Sensei for Code"
+        "command": "devx.showVisualizer",
+        "title": "DevX: Show Visual Intelligence"
       },
       {
-        "command": "vertex.toggleVisualizer",
-        "title": "Vertex: Toggle Visual Intelligence"
+        "command": "devx.runCode",
+        "title": "DevX: Run Current Code"
       },
       {
-        "command": "vertex.selectModel",
-        "title": "Vertex: Select Gemini Model"
+        "command": "devx.askSensei",
+        "title": "DevX: Ask Sensei for Code"
       },
       {
-        "command": "vertex.resetGeminiKey",
-        "title": "Vertex: Reset Gemini API Key",
-        "category": "Vertex"
+        "command": "devx.toggleVisualizer",
+        "title": "DevX: Toggle Visual Intelligence"
       },
       {
-        "command": "vertex.resetOpenRouterKey",
-        "title": "Vertex: Reset OpenRouter API Key",
-        "category": "Vertex"
+        "command": "devx.selectModel",
+        "title": "DevX: Select Gemini Model"
       },
       {
-        "command": "vertex.resetOllamaKey",
-        "title": "Vertex: Reset Ollama Cloud API Key",
-        "category": "Vertex"
+        "command": "devx.resetGeminiKey",
+        "title": "DevX: Reset Gemini API Key",
+        "category": "DevX"
       },
       {
-        "command": "vertex.resetAllKeys",
-        "title": "Vertex: Reset ALL API Keys",
-        "category": "Vertex"
+        "command": "devx.resetOpenRouterKey",
+        "title": "DevX: Reset OpenRouter API Key",
+        "category": "DevX"
+      },
+      {
+        "command": "devx.resetOllamaKey",
+        "title": "DevX: Reset Ollama Cloud API Key",
+        "category": "DevX"
+      },
+      {
+        "command": "devx.resetAllKeys",
+        "title": "DevX: Reset ALL API Keys",
+        "category": "DevX"
+      },
+      {
+        "command": "devx.changeLevel",
+        "title": "DevX: Change Learning Level",
+        "category": "DevX"
+      },
+      {
+        "command": "devx.resetProfile",
+        "title": "DevX: Reset Learning Profile",
+        "category": "DevX"
+      },
+      {
+        "command": "devx.viewStats",
+        "title": "DevX: View Learning Statistics",
+        "category": "DevX"
+      },
+      {
+        "command": "devx.disabledAction",
+        "title": "DevX: Disabled Action (Learning Mode)",
+        "category": "DevX"
+      },
+      {
+        "command": "devx.toggleTab",
+        "title": "DevX: Toggle Tab Key (Hidden)"
+      },
+      {
+        "command": "devx.requestGuidance",
+        "title": "DevX: Request Learning Guidance"
+      },
+      {
+        "command": "devx.openChat",
+        "title": "💬 Chat with Sensei",
+        "category": "DevX"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "vertex-explorer",
-          "title": "Vertex",
+          "id": "devx-explorer",
+          "title": "DevX",
           "icon": "$(eye)"
         }
       ]
     },
     "views": {
-      "vertex-explorer": [
+      "devx-explorer": [
         {
           "type": "webview",
-          "id": "vertex.visualizer",
+          "id": "devx.visualizer",
           "name": "Visual Intelligence",
           "icon": "$(graph-line)",
+          "visibility": "visible"
+        },
+        {
+          "type": "webview",
+          "id": "devx.senseiMessages",
+          "name": "Sensei Messages",
+          "icon": "$(comment-discussion)",
+          "visibility": "visible"
+        },
+        {
+          "type": "webview",
+          "id": "devx.blockCode",
+          "name": "Block Code",
+          "icon": "$(symbol-class)",
           "visibility": "visible"
         }
       ]
     },
     "keybindings": [
       {
-        "command": "vertex.askSensei",
+        "command": "devx.askSensei",
         "key": "ctrl+i",
         "mac": "cmd+i",
         "when": "editorTextFocus"
       },
       {
-        "command": "vertex.toggleVisualizer",
+        "command": "devx.toggleVisualizer",
         "key": "ctrl+shift+v",
         "mac": "cmd+shift+v",
         "when": "editorTextFocus"
       },
       {
-        "command": "vertex.selectModel",
+        "command": "devx.selectModel",
         "key": "ctrl+j",
         "mac": "cmd+j",
         "when": "editorTextFocus"
       },
       {
-        "command": "vertex.changeProvider",
+        "command": "devx.changeProvider",
         "key": "ctrl+h",
         "mac": "cmd+h",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "devx.disabledAction",
+        "key": "tab",
+        "when": "editorTextFocus && devx.locked && devx.level == 'beginner' && !suggestWidgetVisible && !inSnippetMode && !editorTabMovesFocus",
+        "args": "tab"
+      },
+      {
+        "command": "devx.disabledAction",
+        "key": "ctrl+c",
+        "mac": "cmd+c",
+        "when": "editorTextFocus && devx.locked",
+        "args": "copy"
+      },
+      {
+        "command": "devx.disabledAction",
+        "key": "ctrl+v",
+        "mac": "cmd+v",
+        "when": "editorTextFocus && devx.locked",
+        "args": "paste"
+      },
+      {
+        "command": "devx.disabledAction",
+        "key": "ctrl+x",
+        "mac": "cmd+x",
+        "when": "editorTextFocus && devx.locked",
+        "args": "cut"
+      },
+      {
+        "command": "devx.toggleTab",
+        "key": "ctrl+alt+g",
+        "mac": "cmd+alt+g"
       }
     ],
     "configuration": {
-      "title": "Vertex",
+      "title": "DevX",
       "properties": {
-        "vertex.aiProvider": {
+        "devx.aiProvider": {
           "type": "string",
           "default": "Gemini",
           "description": "Fallback provider if service-specific providers are not set.",
@@ -140,7 +222,7 @@
             "Gemini"
           ]
         },
-        "vertex.senseiProvider": {
+        "devx.senseiProvider": {
           "type": "string",
           "default": "Gemini",
           "description": "Provider specifically for Sensei's motivational feedback and insights.",
@@ -151,12 +233,11 @@
             "Gemini"
           ]
         },
-        "vertex.senseiModel": {
+        "devx.senseiModel": {
           "type": "string",
-          "default": "gemini-2.0-flash",
           "description": "Model used by Sensei for mentoring."
         },
-        "vertex.codeGenProvider": {
+        "devx.codeGenProvider": {
           "type": "string",
           "default": "Gemini",
           "description": "Provider specifically for 'Ask Sensei' and auto-completions.",
@@ -167,24 +248,21 @@
             "Gemini"
           ]
         },
-        "vertex.codeGenModel": {
+        "devx.codeGenModel": {
           "type": "string",
-          "default": "gemini-2.0-flash",
           "description": "Model used for code generation."
         },
-        "vertex.ollamaEndpoint": {
+        "devx.ollamaEndpoint": {
           "type": "string",
           "default": "http://localhost:11434",
           "description": "The endpoint for your Local Ollama instance."
         },
-        "vertex.ollamaModel": {
+        "devx.ollamaModel": {
           "type": "string",
-          "default": "llama3",
-          "description": "The local model name to use with Ollama (e.g., llama3, mistral, phi3)."
+          "description": "The local model name to use with Ollama (e.g., llama3, gemma, mistral, phi3)."
         },
-        "vertex.geminiModel": {
+        "devx.geminiModel": {
           "type": "string",
-          "default": "gemini-2.0-flash",
           "description": "The Gemini model to use for Sensei's motivational feedback.",
           "enum": [
             "gemini-2.5-flash",
@@ -211,7 +289,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "@types/vscode": "^1.109.0",
+    "@types/vscode": "^1.95.0",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^10.0.2",
@@ -222,6 +300,7 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1"
+    "@google/generative-ai": "^0.24.1",
+    "blockly": "^12.4.1"
   }
 }

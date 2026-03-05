@@ -7,11 +7,43 @@ export class AIService {
     private context: vscode.ExtensionContext | undefined;
     private senseiModel: any;
     private codeGenModel: any;
+    private static readonly MAX_RETRIES = 2;
+    private static readonly TIMEOUT_MS = 30000; // 30 seconds
 
     // Fail-switch: if true, all services use the same model (Dev override)
     // private readonly SYNC_MODE: boolean = true; 
 
     private constructor() { }
+
+    private static async fetchWithRetry(
+        url: string,
+        options: RequestInit,
+        retries = 0
+    ): Promise<Response> {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), this.TIMEOUT_MS);
+
+            const response = await fetch(url, {
+                ...options,
+                signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+            return response;
+        } catch (error: any) {
+            if (retries < this.MAX_RETRIES) {
+                console.log(`[DevX] Retry ${retries + 1}/${this.MAX_RETRIES} for ${url}`);
+                await new Promise(resolve => setTimeout(resolve, 1000 * (retries + 1)));
+                return this.fetchWithRetry(url, options, retries + 1);
+            }
+
+            if (error.name === 'AbortError' || error.message?.includes('fetch failed') || error.cause?.name === 'ConnectTimeoutError') {
+                throw new Error('Network connection timeout. Check your internet connection and try again.');
+            }
+            throw error;
+        }
+    }
 
     public static getInstance(): AIService {
         if (!AIService.instance) {
@@ -30,7 +62,7 @@ export class AIService {
      * Re-initializes models based on current configuration.
      */
     public async syncModels(): Promise<void> {
-        const config = vscode.workspace.getConfiguration('vertex');
+        const config = vscode.workspace.getConfiguration('devx');
         const senseiProvider = config.get<string>('senseiProvider') || 'Gemini';
         const codeGenProvider = config.get<string>('codeGenProvider') || 'Gemini';
 
@@ -46,7 +78,7 @@ export class AIService {
         if (apiKey) {
             try {
                 this.genAI = new GoogleGenerativeAI(apiKey);
-                const config = vscode.workspace.getConfiguration('vertex');
+                const config = vscode.workspace.getConfiguration('devx');
 
                 const senseiModelName = config.get<string>('senseiModel') || 'gemini-2.0-flash';
                 this.senseiModel = this.genAI.getGenerativeModel({ model: senseiModelName }, { apiVersion: 'v1beta' });
@@ -54,7 +86,7 @@ export class AIService {
                 const codeGenModelName = config.get<string>('codeGenModel') || 'gemini-2.0-flash';
                 this.codeGenModel = this.genAI.getGenerativeModel({ model: codeGenModelName }, { apiVersion: 'v1beta' });
             } catch (error) {
-                console.error('[Vertex] Gemini Init Error:', error);
+                console.error('[DevX] Gemini Init Error:', error);
             }
         }
     }
@@ -84,7 +116,7 @@ export class AIService {
      * Lists available models for a given provider.
      */
     public async listModels(provider: string): Promise<string[]> {
-        const config = vscode.workspace.getConfiguration('vertex');
+        const config = vscode.workspace.getConfiguration('devx');
         try {
             if (provider === 'Gemini') {
                 // Hardcoded defaults for now as Gemini listModels API is often restricted
@@ -100,24 +132,30 @@ export class AIService {
 
             if (provider === 'Ollama Cloud') {
                 // Use default endpoint for Ollama Cloud (assuming standard API)
-                const res = await fetch('https://api.ollama.com/api/tags');
+                const res = await AIService.fetchWithRetry('https://api.ollama.com/api/tags', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
                 const data: any = await res.json();
                 return data.models.map((m: any) => m.name);
             }
 
             if (provider === 'OpenRouter') {
-                const res = await fetch('https://openrouter.ai/api/v1/models');
+                const res = await AIService.fetchWithRetry('https://openrouter.ai/api/v1/models', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
                 const data: any = await res.json();
                 return data.data.map((m: any) => m.id);
             }
         } catch (error) {
-            console.error(`[Vertex] Error listing models for ${provider}:`, error);
+            console.error(`[DevX] Error listing models for ${provider}:`, error);
         }
         return [];
     }
 
     private async callAI(prompt: string, service: 'sensei' | 'codegen'): Promise<string> {
-        const config = vscode.workspace.getConfiguration('vertex');
+        const config = vscode.workspace.getConfiguration('devx');
 
         // Developer Fail-switch (manual edit required)
         // if (this.SYNC_MODE) { service = 'codegen'; } 
@@ -126,7 +164,12 @@ export class AIService {
         const modelKey = service === 'sensei' ? 'senseiModel' : 'codeGenModel';
 
         const provider = config.get<string>(providerKey) || 'Gemini';
-        const modelName = config.get<string>(modelKey);
+        
+        // Use ollamaModel for Ollama providers, otherwise use the service-specific model
+        let modelName = config.get<string>(modelKey);
+        if (provider === 'Local Model (Ollama)' || provider === 'Ollama Cloud') {
+            modelName = config.get<string>('ollamaModel') || modelName;
+        }
 
         try {
             if (provider === 'Gemini') {
@@ -168,7 +211,7 @@ export class AIService {
                 throw new Error(`Unknown provider: ${provider}`);
             }
 
-            const res = await fetch(url, {
+            const res = await AIService.fetchWithRetry(url, {
                 method: 'POST',
                 headers,
                 body: JSON.stringify(body)
@@ -181,17 +224,133 @@ export class AIService {
 
             if (!res.ok) {
                 const errText = await res.text();
-                throw new Error(`AI Provider Error (${res.status}): ${errText}`);
+                console.error(`[DevX] ${provider} API Error (${res.status}):`, errText);
+                throw new Error(`${provider} returned ${res.status}: ${errText.substring(0, 150)}`);
             }
 
             const data: any = await res.json();
+            console.log(`[DevX] ${provider} response received:`, JSON.stringify(data).substring(0, 200));
+
             if (provider === 'OpenRouter') {
+                if (!data.choices || data.choices.length === 0) {
+                    console.error('[DevX] OpenRouter returned empty choices:', data);
+                    throw new Error('OpenRouter API returned no response. The model may be unavailable or overloaded.');
+                }
                 return data.choices[0].message.content.trim();
+            }
+            
+            if (!data.response) {
+                console.error(`[DevX] ${provider} returned no response:`, data);
+                throw new Error(`${provider} returned empty response`);
             }
             return data.response.trim();
 
         } catch (error) {
-            console.error(`[Vertex] AI Call Error (${provider}):`, error);
+            console.error(`[DevX] AI Call Error (${provider}):`, error);
+            
+            // User-friendly error messages
+            const errorMsg = (error as Error).message;
+            
+            // Try to fallback to Gemini if it's not already being used
+            if (provider !== 'Gemini' && this.genAI) {
+                console.log(`[DevX] Attempting fallback to Gemini for ${service}...`);
+                try {
+                    const model = service === 'sensei' ? this.senseiModel : this.codeGenModel;
+                    if (model) {
+                        const result = await model.generateContent(prompt);
+                        const response = await result.response;
+                        vscode.window.showInformationMessage(
+                            `⚠️ ${provider} unavailable. Using Gemini as fallback.`,
+                            'Change Provider'
+                        ).then(choice => {
+                            if (choice === 'Change Provider') {
+                                vscode.commands.executeCommand('devx.changeProvider');
+                            }
+                        });
+                        return response.text().trim();
+                    }
+                } catch (fallbackError) {
+                    console.error('[DevX] Gemini fallback also failed:', fallbackError);
+                }
+            }
+            
+            // Show appropriate error message
+            if (errorMsg.includes('Network connection timeout') || errorMsg.includes('fetch failed')) {
+                const choice = await vscode.window.showErrorMessage(
+                    `🌐 Cannot reach ${provider} API. This could be due to:
+• Network/firewall blocking the API
+• ${provider} service is down
+• Invalid API key
+
+Try switching to Gemini or Local Ollama.`,
+                    { modal: true },
+                    'Switch to Gemini',
+                    'Change Provider',
+                    'Retry'
+                );
+                
+                if (choice === 'Switch to Gemini') {
+                    const config = vscode.workspace.getConfiguration('devx');
+                    const key = service === 'sensei' ? 'senseiProvider' : 'codeGenProvider';
+                    config.update(key, 'Gemini', vscode.ConfigurationTarget.Global);
+                    vscode.window.showInformationMessage('✅ Switched to Gemini. Try your request again.');
+                } else if (choice === 'Change Provider') {
+                    vscode.commands.executeCommand('devx.changeProvider');
+                }
+            } else if (errorMsg.includes('returned no response') || errorMsg.includes('empty choices')) {
+                const choice = await vscode.window.showErrorMessage(
+                    `⚡ ${provider} Model Unavailable\n\nThe model is overloaded or returned no response.\n\nRecommended: Switch to Gemini (most reliable) or try a different model.`,
+                    { modal: true },
+                    'Switch to Gemini',
+                    'Try Different Model',
+                    'Retry'
+                );
+                
+                if (choice === 'Switch to Gemini') {
+                    const config = vscode.workspace.getConfiguration('devx');
+                    const key = service === 'sensei' ? 'senseiProvider' : 'codeGenProvider';
+                    config.update(key, 'Gemini', vscode.ConfigurationTarget.Global);
+                    vscode.window.showInformationMessage('✅ Switched to Gemini. Try your request again.');
+                } else if (choice === 'Try Different Model') {
+                    vscode.commands.executeCommand('devx.selectModel');
+                }
+            } else if (errorMsg.includes('API Limit') || errorMsg.includes('429')) {
+                const choice = await vscode.window.showErrorMessage(
+                    `⚡ ${provider} API Limit Exhausted\n\nYou've made too many requests or exhausted your quota.`,
+                    { modal: true },
+                    'Switch to Gemini',
+                    'Try Different Model',
+                    'View Alternatives'
+                );
+                
+                if (choice === 'Switch to Gemini') {
+                    const config = vscode.workspace.getConfiguration('devx');
+                    const key = service === 'sensei' ? 'senseiProvider' : 'codeGenProvider';
+                    await config.update(key, 'Gemini', vscode.ConfigurationTarget.Global);
+                    vscode.window.showInformationMessage('Switched to Gemini. Please try again.');
+                } else if (choice === 'Try Different Model') {
+                    await vscode.commands.executeCommand('devx.selectModel');
+                } else if (choice === 'View Alternatives') {
+                    vscode.window.showInformationMessage(
+                        '💡 Alternative AI Providers:\n\n' +
+                        '✅ Gemini (Free: 1500 req/day)\n' +
+                        '✅ Local Ollama (Unlimited, offline)\n' +
+                        '✅ OpenRouter (Pay-as-you-go)\n\n' +
+                        'Use "DevX: Change Provider" to switch.',
+                        { modal: true }
+                    );
+                }
+            } else {
+                vscode.window.showErrorMessage(
+                    `❌ ${provider} Error: ${errorMsg.substring(0, 120)}`,
+                    'Change Provider'
+                ).then(choice => {
+                    if (choice === 'Change Provider') {
+                        vscode.commands.executeCommand('devx.changeProvider');
+                    }
+                });
+            }
+            
             throw error;
         }
     }
@@ -202,6 +361,15 @@ export class AIService {
             return await this.callAI(prompt, 'sensei');
         } catch (error) {
             return "Persistence is the key to mastery. Keep coding!";
+        }
+    }
+
+    public async generateSenseiResponse(prompt: string, context: string): Promise<string> {
+        try {
+            return await this.callAI(prompt, 'sensei');
+        } catch (error) {
+            console.error('[DevX] Sensei response error:', error);
+            return "";
         }
     }
 
